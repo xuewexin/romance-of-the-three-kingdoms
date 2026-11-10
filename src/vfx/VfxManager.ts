@@ -38,10 +38,18 @@ export class VfxManager {
   }
 
   // Character strike action animations
+  private getUnitElement(unitId: string): HTMLElement | null {
+    if (!unitId) return null;
+    if (unitId === 'player' || unitId === 'GUAN_YU' || unitId === 'ZHUGE_LIANG' || unitId === 'GAN_NING') {
+      return document.getElementById('unit-player') || document.getElementById(`unit-${unitId}`);
+    }
+    return document.getElementById(`unit-${unitId}`) || document.getElementById('unit-player');
+  }
+
   public triggerAttackAnimation(sourceId: string): void {
-    const el = document.getElementById(`unit-${sourceId}`);
+    const el = this.getUnitElement(sourceId);
     if (!el) return;
-    const isPlayer = sourceId === 'player';
+    const isPlayer = sourceId === 'player' || sourceId === 'GUAN_YU' || sourceId === 'ZHUGE_LIANG' || sourceId === 'GAN_NING';
     const animClass = isPlayer ? 'anim-attack-player' : 'anim-attack-enemy';
     el.classList.remove('anim-attack-player', 'anim-attack-enemy');
     void el.offsetWidth;
@@ -52,7 +60,7 @@ export class VfxManager {
   }
 
   public triggerHitAnimation(targetId: string): void {
-    const el = document.getElementById(`unit-${targetId}`);
+    const el = this.getUnitElement(targetId);
     if (!el) return;
     el.classList.remove('anim-hit-recoil');
     void el.offsetWidth;
@@ -63,7 +71,7 @@ export class VfxManager {
   }
 
   public triggerDefendAnimation(targetId: string): void {
-    const el = document.getElementById(`unit-${targetId}`);
+    const el = this.getUnitElement(targetId);
     if (!el) return;
     el.classList.remove('anim-shield-brace');
     void el.offsetWidth;
@@ -350,7 +358,7 @@ export class VfxManager {
 
   private getTargetCenter(target: any): { x: number; y: number } {
     if (target && target.id) {
-      const el = document.getElementById(`unit-${target.id}`);
+      const el = this.getUnitElement(target.id);
       if (el) {
         const rect = el.getBoundingClientRect();
         return {

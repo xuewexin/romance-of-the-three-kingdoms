@@ -604,14 +604,32 @@ export class GameApp {
 
     let html = `
       <header class="game-header">
-        <div class="brand">
-          <span class="crest">${GameIcons.DRAGON_SEAL}</span>
-          <span class="title">乱世残卷：建安魔障</span>
+        <div class="brand-plaque">
+          <div class="dragon-crest">${GameIcons.DRAGON_SEAL}</div>
+          <div class="brand-title">乱世残卷 · 建安魔障</div>
         </div>
-        <div class="stats-bar">
-          <div class="stat"><span class="icon">${GameIcons.HP_HEART}</span> <span class="stat-text">气血: <b>${this.runState.currentHp}/${this.runState.maxHp}</b></span></div>
-          <div class="stat"><span class="icon">${GameIcons.COIN}</span> <span class="stat-text">铜钱: <b>${this.runState.gold}</b></span></div>
-          <div class="stat"><span class="icon">${GameIcons.MAP_SCROLL}</span> <span class="stat-text">第 <b>${this.runState.act}</b> 幕 · 第 <b>${this.runState.currentFloor + 1}</b> 层</span></div>
+        <div class="military-stats-board">
+          <div class="hero-hp-vessel">
+            <div class="vessel-badge">${GameIcons.HP_HEART}</div>
+            <div class="vessel-info">
+              <span class="vessel-label">气血</span>
+              <span class="vessel-val"><b>${this.runState.currentHp}</b> / ${this.runState.maxHp}</span>
+            </div>
+          </div>
+          <div class="military-treasury-tally">
+            <div class="tally-badge">${GameIcons.COIN}</div>
+            <div class="tally-info">
+              <span class="tally-label">军饷</span>
+              <span class="tally-val"><b>${this.runState.gold}</b> 铢</span>
+            </div>
+          </div>
+          <div class="campaign-map-tablet">
+            <div class="tablet-badge">${GameIcons.MAP_SCROLL}</div>
+            <div class="tablet-info">
+              <span class="tablet-label">战役</span>
+              <span class="tablet-val">第 <b>${this.runState.act}</b> 幕 · <b>${this.runState.currentFloor + 1}</b> 层</span>
+            </div>
+          </div>
         </div>
         <div class="relics-bar">
           ${this.runState.relics
@@ -911,25 +929,49 @@ export class GameApp {
 
         <!-- Controls / Energy / End Turn -->
         <div class="battle-controls">
-          <div class="energy-orb" title="军令 (打出卡牌所需费用)">
-            <span class="energy-val">${player.energy}</span>
-            <span class="energy-max">/${player.maxEnergy}</span>
+          <!-- Eight Trigrams Bronze Energy Crucible -->
+          <div class="energy-crucible" title="主公军令 (出牌所需点数)">
+            <div class="crucible-trigram-ring">☰☱☲☳☴☵☶☷</div>
+            <div class="crucible-core">
+              <span class="energy-val">${player.energy}</span>
+              <span class="energy-slash">/</span>
+              <span class="energy-max">${player.maxEnergy}</span>
+            </div>
+            <div class="crucible-label">军令</div>
           </div>
 
-          <div class="deck-counts">
-            <span class="deck-pill" title="抽牌堆"><span class="pill-ico">${GameIcons.DRAW_PILE}</span> <span>牌堆: ${this.currentBattle.deckManager.getDrawPile().length}</span></span>
-            <span class="deck-pill" title="弃牌堆"><span class="pill-ico">${GameIcons.DISCARD_PILE}</span> <span>弃牌: ${this.currentBattle.deckManager.getDiscardPile().length}</span></span>
-            <span class="deck-pill" title="消耗堆"><span class="pill-ico">${GameIcons.EXHAUST_PILE}</span> <span>消耗: ${this.currentBattle.deckManager.getExhaustPile().length}</span></span>
-            <span class="deck-pill hint-pill"><span>点击或拖拽卡牌出牌</span></span>
+          <!-- Military Command Slips (Deck Counts) -->
+          <div class="deck-slips-container">
+            <div class="military-slip" title="尚存可用军令牌">
+              <span class="slip-icon">${GameIcons.DRAW_PILE}</span>
+              <span class="slip-title">牌堆</span>
+              <span class="slip-count">${this.currentBattle.deckManager.getDrawPile().length}</span>
+            </div>
+            <div class="military-slip" title="已打出及弃置战牌">
+              <span class="slip-icon">${GameIcons.DISCARD_PILE}</span>
+              <span class="slip-title">弃牌</span>
+              <span class="slip-count">${this.currentBattle.deckManager.getDiscardPile().length}</span>
+            </div>
+            <div class="military-slip" title="战局中已焚毁战策">
+              <span class="slip-icon">${GameIcons.EXHAUST_PILE}</span>
+              <span class="slip-title">损耗</span>
+              <span class="slip-count">${this.currentBattle.deckManager.getExhaustPile().length}</span>
+            </div>
+            <div class="military-slip military-hint-ribbon">
+              <span>点击或向上拖拽出牌</span>
+            </div>
           </div>
 
-          <button class="end-turn-btn" ${this.currentBattle.phase !== 'PLAYER_ACTION' ? 'disabled' : ''}>
-            <div class="turn-label">结束回合</div>
-            <div class="turn-sub">第 ${this.currentBattle.turnCount} 回合</div>
+          <!-- Grand Tiger Tally End Turn Button -->
+          <button class="tiger-tally-btn end-turn-btn" ${this.currentBattle.phase !== 'PLAYER_ACTION' ? 'disabled' : ''}>
+            <div class="tally-face">
+              <div class="tally-title">鸣金收兵</div>
+              <div class="tally-turn">第 ${this.currentBattle.turnCount} 回合</div>
+            </div>
           </button>
         </div>
 
-        <!-- Hand Cards Fan -->
+        <!-- Hand Cards Flat Tray -->
         <div class="hand-container">
           ${hand
             .map((card, idx) => {
@@ -950,7 +992,7 @@ export class GameApp {
               return `
               <div class="hand-card card-type-${card.type.toLowerCase()} ${canAfford ? 'affordable' : 'unaffordable'} ${isSelected ? 'selected' : ''} ${hasCombo ? 'combo-active' : ''}"
                    data-index="${idx}"
-                   style="transform: translate(${tf.translateX}px, ${isSelected ? tf.translateY - 45 : tf.translateY}px) rotate(${isSelected ? 0 : tf.rotateDeg}deg); z-index: ${isSelected ? 120 : tf.zIndex};">
+                   style="--card-x: ${tf.translateX}px; --card-y: ${isSelected ? -34 : tf.translateY}px; z-index: ${isSelected ? 120 : tf.zIndex};">
                 <div class="card-cost">${card.cost}</div>
                 <div class="card-name">${card.name}</div>
                 <div class="card-type-label">${card.type === 'ATTACK' ? '武技' : card.type === 'SKILL' ? '韬略' : '兵法'}</div>

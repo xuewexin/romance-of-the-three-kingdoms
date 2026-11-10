@@ -4,7 +4,7 @@
 export class SvgCharacters {
   public static getUnitImageUrl(id: string): string | null {
     const map: Record<string, string> = {
-      GUAN_YU: '/assets/characters/guanyu.jpg',
+      GUAN_YU: '/assets/characters/guanyu_idle.jpg',
       ZHUGE_LIANG: '/assets/characters/zhugeliang.jpg',
       GAN_NING: '/assets/characters/ganning.jpg',
       boss_zhang_jiao: '/assets/enemies/zhang_jiao.jpg',
