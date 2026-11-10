@@ -1,0 +1,152 @@
+[
+  {
+    "enemy_id": "enemy_yellow_chanter",
+    "name": "黄巾诵咒师",
+    "title": "妖术狂热者",
+    "max_hp_range": [38, 44],
+    "moves": {
+      "CURSE_CHANT": {
+        "intent_type": "BUFF",
+        "description": "诵经祈禳：自身获得 2 点【武力】并为全体施加 4 点格挡",
+        "actions": [
+          { "type": "APPLY_BUFF", "target": "SELF", "buff_id": "STRENGTH", "stacks": 2 },
+          { "type": "GAIN_BLOCK", "target": "SELF", "value": 4 }
+        ]
+      },
+      "TALISMAN_FIRE": {
+        "intent_type": "ATTACK",
+        "base_damage": 7,
+        "hits": 1,
+        "description": "符火术：造成 7 点伤害",
+        "actions": [
+          { "type": "DEAL_DAMAGE", "value": 7 }
+        ]
+      }
+    },
+    "ai_pattern": {
+      "turn_1": "CURSE_CHANT",
+      "default_weights": {
+        "TALISMAN_FIRE": 60,
+        "CURSE_CHANT": 40
+      }
+    }
+  },
+  {
+    "enemy_id": "enemy_talisman_warrior",
+    "name": "符水力士",
+    "title": "刀枪不入",
+    "max_hp_range": [48, 54],
+    "moves": {
+      "IRON_BARRICADE": {
+        "intent_type": "DEFEND",
+        "block": 12,
+        "description": "符水护体：获得 12 点格挡",
+        "actions": [
+          { "type": "GAIN_BLOCK", "target": "SELF", "value": 12 }
+        ]
+      },
+      "HEAVY_HAMMER": {
+        "intent_type": "ATTACK",
+        "base_damage": 10,
+        "hits": 1,
+        "description": "开山锤：造成 10 点重击",
+        "actions": [
+          { "type": "DEAL_DAMAGE", "value": 10 }
+        ]
+      }
+    },
+    "ai_pattern": {
+      "default_weights": {
+        "HEAVY_HAMMER": 60,
+        "IRON_BARRICADE": 40
+      }
+    }
+  },
+  {
+    "enemy_id": "elite_guan_hai",
+    "name": "黄巾猛将·管亥",
+    "title": "北海狂徒",
+    "max_hp_range": [85, 95],
+    "moves": {
+      "BERSERK_ROAR": {
+        "intent_type": "BUFF",
+        "description": "狂暴战吼：自身获得 3 点【武力】",
+        "actions": [
+          { "type": "APPLY_BUFF", "target": "SELF", "buff_id": "STRENGTH", "stacks": 3 }
+        ]
+      },
+      "CLEAVE": {
+        "intent_type": "ATTACK",
+        "base_damage": 13,
+        "hits": 1,
+        "description": "狂劈：造成 13 点高额伤害",
+        "actions": [
+          { "type": "DEAL_DAMAGE", "value": 13 }
+        ]
+      },
+      "TWIN_CHOP": {
+        "intent_type": "MULTI_ATTACK",
+        "base_damage": 6,
+        "hits": 2,
+        "description": "双连斩：造成 6x2 点伤害",
+        "actions": [
+          { "type": "DEAL_MULTI_DAMAGE", "value": 6, "hits": 2 }
+        ]
+      }
+    },
+    "ai_pattern": {
+      "turn_1": "BERSERK_ROAR",
+      "default_weights": {
+        "CLEAVE": 50,
+        "TWIN_CHOP": 35,
+        "BERSERK_ROAR": 15
+      }
+    }
+  },
+  {
+    "enemy_id": "boss_zhang_jiao",
+    "name": "天公将军·张角",
+    "title": "大贤良师",
+    "max_hp_range": [220, 240],
+    "moves": {
+      "CHANT_THUNDER": {
+        "intent_type": "CHARGE",
+        "description": "诵经蓄雷：获得 15 点格挡，蓄积【九天引雷】！",
+        "actions": [
+          { "type": "APPLY_BUFF", "target": "SELF", "buff_id": "THUNDER_CHARGE", "stacks": 1 },
+          { "type": "GAIN_BLOCK", "target": "SELF", "value": 15 }
+        ]
+      },
+      "YELLOW_SKY_WRATH": {
+        "intent_type": "ATTACK_DEBUFF",
+        "base_damage": 24,
+        "hits": 1,
+        "description": "苍天已死·雷罚：造成 24 点巨额雷击，并对玩家施加 2 层【怯战】！",
+        "actions": [
+          { "type": "DEAL_DAMAGE", "value": 24 },
+          { "type": "APPLY_BUFF_PLAYER", "buff_id": "WEAK", "stacks": 2 },
+          { "type": "REMOVE_BUFF", "buff_id": "THUNDER_CHARGE" }
+        ]
+      },
+      "TALISMAN_STRIKE": {
+        "intent_type": "MULTI_ATTACK",
+        "base_damage": 6,
+        "hits": 3,
+        "description": "五斗米符法：造成 6x3 点穿心连击！",
+        "actions": [
+          { "type": "DEAL_MULTI_DAMAGE", "value": 6, "hits": 3 }
+        ]
+      }
+    },
+    "ai_pattern": {
+      "turn_1": "CHANT_THUNDER",
+      "conditional": [
+        { "if_self_has_buff": "THUNDER_CHARGE", "force_move": "YELLOW_SKY_WRATH" }
+      ],
+      "default_weights": {
+        "CHANT_THUNDER": 50,
+        "TALISMAN_STRIKE": 50
+      }
+    }
+  }
+]

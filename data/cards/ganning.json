@@ -1,0 +1,182 @@
+[
+  {
+    "id": "gn_strike",
+    "name": "锦帆突刺",
+    "character": "GAN_NING",
+    "rarity": "COMMON",
+    "type": "ATTACK",
+    "cost": 1,
+    "target": "SINGLE_ENEMY",
+    "tags": ["STRIKE"],
+    "description": "造成 {damage} 点伤害。",
+    "base_stats": { "damage": 6 },
+    "upgraded_stats": { "damage": 9 },
+    "actions": [
+      { "type": "DEAL_DAMAGE", "value_ref": "damage" }
+    ]
+  },
+  {
+    "id": "gn_defend",
+    "name": "潜行遁影",
+    "character": "GAN_NING",
+    "rarity": "COMMON",
+    "type": "SKILL",
+    "cost": 1,
+    "target": "SELF",
+    "tags": ["DEFEND"],
+    "description": "获得 {block} 点格挡。",
+    "base_stats": { "block": 5 },
+    "upgraded_stats": { "block": 8 },
+    "actions": [
+      { "type": "GAIN_BLOCK", "value_ref": "block" }
+    ]
+  },
+  {
+    "id": "gn_sleeve_dart",
+    "name": "袖箭",
+    "character": "GAN_NING",
+    "rarity": "COMMON",
+    "type": "ATTACK",
+    "cost": 0,
+    "target": "SINGLE_ENEMY",
+    "exhaust": true,
+    "tags": ["DART", "STRIKE"],
+    "description": "造成 {damage} 点穿甲伤害。【消耗】。",
+    "base_stats": { "damage": 4 },
+    "upgraded_stats": { "damage": 7 },
+    "actions": [
+      { "type": "DEAL_DART_DAMAGE", "value_ref": "damage" }
+    ]
+  },
+  {
+    "id": "gn_feather_bell",
+    "name": "百翎响铃",
+    "character": "GAN_NING",
+    "rarity": "COMMON",
+    "type": "SKILL",
+    "cost": 1,
+    "target": "SELF",
+    "tags": ["DART"],
+    "description": "抽取 2 张牌。将 {dart_count} 张【袖箭】置入手牌。",
+    "base_stats": { "dart_count": 2 },
+    "upgraded_stats": { "dart_count": 3 },
+    "actions": [
+      { "type": "DRAW_CARD", "value": 2 },
+      { "type": "ADD_CARD_TO_HAND", "card_id": "gn_sleeve_dart", "count_ref": "dart_count" }
+    ]
+  },
+  {
+    "id": "gn_night_raid",
+    "name": "百骑劫营",
+    "character": "GAN_NING",
+    "rarity": "UNCOMMON",
+    "type": "SKILL",
+    "cost": 1,
+    "target": "SELF",
+    "tags": ["DISCARD"],
+    "description": "抽取 3 张牌，随后弃置 2 张手牌。恢复 1 点【军令】。",
+    "base_stats": {},
+    "upgraded_stats": { "cost": 0 },
+    "actions": [
+      { "type": "DRAW_CARD", "value": 3 },
+      { "type": "PLAYER_CHOOSE_DISCARD", "count": 2 },
+      { "type": "GAIN_ENERGY", "value": 1 }
+    ]
+  },
+  {
+    "id": "gn_oil_splash",
+    "name": "火油覆阵",
+    "character": "GAN_NING",
+    "rarity": "COMMON",
+    "type": "SKILL",
+    "cost": 1,
+    "target": "ALL_ENEMIES",
+    "tags": ["FIRE"],
+    "description": "对全体敌军施加 {oil} 层【火油】（回合末受到等量真实伤害后层数减半）。",
+    "base_stats": { "oil": 6 },
+    "upgraded_stats": { "oil": 9 },
+    "actions": [
+      { "type": "APPLY_BUFF_ALL", "buff_id": "OIL_BURN", "value_ref": "oil" }
+    ]
+  },
+  {
+    "id": "gn_fire_arrow",
+    "name": "火箭引爆",
+    "character": "GAN_NING",
+    "rarity": "UNCOMMON",
+    "type": "ATTACK",
+    "cost": 1,
+    "target": "SINGLE_ENEMY",
+    "tags": ["FIRE", "STRIKE"],
+    "description": "造成 {damage} 点伤害。【引燃】：立刻结算目标身上的全部【火油】伤害，并向其他敌人传染 50% 层数！",
+    "base_stats": { "damage": 8 },
+    "upgraded_stats": { "damage": 12 },
+    "actions": [
+      { "type": "IGNITE_OIL_DAMAGE", "value_ref": "damage" }
+    ]
+  },
+  {
+    "id": "gn_hundred_steps",
+    "name": "百步穿杨",
+    "character": "GAN_NING",
+    "rarity": "RARE",
+    "type": "POWER",
+    "cost": 1,
+    "target": "SELF",
+    "description": "【兵法】：本场战斗中，所有【袖箭】造成的伤害额外增加 {boost} 点。",
+    "base_stats": { "boost": 4 },
+    "upgraded_stats": { "boost": 6 },
+    "actions": [
+      { "type": "APPLY_BUFF", "buff_id": "DART_BOOST", "value_ref": "boost" }
+    ]
+  },
+  {
+    "id": "gn_secret_crossing",
+    "name": "暗渡陈仓",
+    "character": "GAN_NING",
+    "rarity": "UNCOMMON",
+    "type": "SKILL",
+    "cost": 1,
+    "target": "SELF",
+    "tags": ["DISCARD"],
+    "description": "获得 {block} 点格挡。若此牌被弃置，立即为你恢复 2 点【军令】并抽 1 张牌！",
+    "base_stats": { "block": 7 },
+    "upgraded_stats": { "block": 10 },
+    "actions": [
+      { "type": "GAIN_BLOCK", "value_ref": "block" }
+    ]
+  },
+  {
+    "id": "gn_chain_link",
+    "name": "铁索连环",
+    "character": "GAN_NING",
+    "rarity": "RARE",
+    "type": "SKILL",
+    "cost": 1,
+    "target": "ALL_ENEMIES",
+    "tags": ["TACTIC"],
+    "description": "对全体敌军施加 2 层【破绽】。将所有敌军链接，任意一人受击时其余人分摊 30% 伤害！",
+    "base_stats": {},
+    "upgraded_stats": { "cost": 0 },
+    "actions": [
+      { "type": "APPLY_BUFF_ALL", "buff_id": "VULNERABLE", "stacks": 2 },
+      { "type": "APPLY_BUFF_ALL", "buff_id": "CHAIN_LINK", "stacks": 3 }
+    ]
+  },
+  {
+    "id": "gn_frenzy_strike",
+    "name": "千刃狂澜",
+    "character": "GAN_NING",
+    "rarity": "RARE",
+    "type": "ATTACK",
+    "cost": 2,
+    "target": "SINGLE_ENEMY",
+    "tags": ["STRIKE"],
+    "description": "造成 {damage} 点伤害。本回合每打出一张牌，本牌重复释放一次！",
+    "base_stats": { "damage": 5 },
+    "upgraded_stats": { "damage": 7 },
+    "actions": [
+      { "type": "COMBO_REPEAT_ATTACK", "value_ref": "damage" }
+    ]
+  }
+]

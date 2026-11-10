@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Production Build
+dist/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS / Editor Files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

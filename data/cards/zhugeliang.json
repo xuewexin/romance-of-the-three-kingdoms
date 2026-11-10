@@ -1,0 +1,236 @@
+[
+  {
+    "id": "zgl_strike",
+    "name": "羽扇挥击",
+    "character": "ZHUGE_LIANG",
+    "rarity": "COMMON",
+    "type": "ATTACK",
+    "cost": 1,
+    "target": "SINGLE_ENEMY",
+    "tags": ["STRIKE"],
+    "description": "造成 {damage} 点伤害。",
+    "base_stats": { "damage": 5 },
+    "upgraded_stats": { "damage": 8 },
+    "actions": [
+      { "type": "DEAL_DAMAGE", "value_ref": "damage" }
+    ]
+  },
+  {
+    "id": "zgl_defend",
+    "name": "筹谋",
+    "character": "ZHUGE_LIANG",
+    "rarity": "COMMON",
+    "type": "SKILL",
+    "cost": 1,
+    "target": "SELF",
+    "tags": ["DEFEND"],
+    "description": "获得 {block} 点格挡。",
+    "base_stats": { "block": 5 },
+    "upgraded_stats": { "block": 8 },
+    "actions": [
+      { "type": "GAIN_BLOCK", "value_ref": "block" }
+    ]
+  },
+  {
+    "id": "zgl_eight_trigrams",
+    "name": "八阵演化",
+    "character": "ZHUGE_LIANG",
+    "rarity": "COMMON",
+    "type": "SKILL",
+    "cost": 1,
+    "target": "SELF",
+    "tags": ["ORB"],
+    "description": "随机生成 1 个【奇门阵眼】（火/雾/雷/风）。",
+    "base_stats": { "count": 1 },
+    "upgraded_stats": { "count": 1, "block": 4 },
+    "actions": [
+      { "type": "CHANNEL_RANDOM_ORB" },
+      { "type": "GAIN_BLOCK", "value_ref": "block" }
+    ]
+  },
+  {
+    "id": "zgl_fire_beacon",
+    "name": "引火焚原",
+    "character": "ZHUGE_LIANG",
+    "rarity": "COMMON",
+    "type": "SKILL",
+    "cost": 1,
+    "target": "SELF",
+    "tags": ["ORB", "FIRE"],
+    "description": "生成 1 个【火阵眼】（回合末灼烧最低血量敌人，激发全场轰击）。",
+    "base_stats": {},
+    "upgraded_stats": { "damage": 4 },
+    "actions": [
+      { "type": "CHANNEL_ORB", "buff_id": "FIRE" },
+      { "type": "DEAL_DAMAGE_ALL", "value_ref": "damage" }
+    ]
+  },
+  {
+    "id": "zgl_mist_shroud",
+    "name": "迷雾锁江",
+    "character": "ZHUGE_LIANG",
+    "rarity": "COMMON",
+    "type": "SKILL",
+    "cost": 1,
+    "target": "SELF",
+    "tags": ["ORB", "DEFEND"],
+    "description": "获得 {block} 点格挡。生成 1 个【雾阵眼】（回合末持续提供格挡）。",
+    "base_stats": { "block": 6 },
+    "upgraded_stats": { "block": 9 },
+    "actions": [
+      { "type": "GAIN_BLOCK", "value_ref": "block" },
+      { "type": "CHANNEL_ORB", "buff_id": "MIST" }
+    ]
+  },
+  {
+    "id": "zgl_thunder_strike",
+    "name": "天雷引",
+    "character": "ZHUGE_LIANG",
+    "rarity": "UNCOMMON",
+    "type": "SKILL",
+    "cost": 1,
+    "target": "SELF",
+    "tags": ["ORB", "THUNDER"],
+    "description": "生成 1 个【雷阵眼】（每次打出韬略牌时落雷劈击随机敌人）。",
+    "base_stats": {},
+    "upgraded_stats": { "focus": 1 },
+    "actions": [
+      { "type": "CHANNEL_ORB", "buff_id": "THUNDER" },
+      { "type": "APPLY_BUFF", "buff_id": "FOCUS", "value_ref": "focus" }
+    ]
+  },
+  {
+    "id": "zgl_east_wind",
+    "name": "借东风",
+    "character": "ZHUGE_LIANG",
+    "rarity": "UNCOMMON",
+    "type": "SKILL",
+    "cost": 1,
+    "target": "SELF",
+    "provides_tag": "WIND",
+    "tags": ["ORB", "WIND", "COMBO"],
+    "description": "回复 2 点【军令】，生成 1 个【风阵眼】。提供【东风】连环印记。",
+    "base_stats": { "energy": 2 },
+    "upgraded_stats": { "energy": 3 },
+    "actions": [
+      { "type": "GAIN_ENERGY", "value_ref": "energy" },
+      { "type": "CHANNEL_ORB", "buff_id": "WIND" }
+    ]
+  },
+  {
+    "id": "zgl_qimen_dunjia",
+    "name": "奇门遁甲",
+    "character": "ZHUGE_LIANG",
+    "rarity": "RARE",
+    "type": "POWER",
+    "cost": 2,
+    "target": "SELF",
+    "description": "【兵法】：获得 {focus} 点【运筹】（提升所有奇门阵眼的被动与激发效果）。",
+    "base_stats": { "focus": 2 },
+    "upgraded_stats": { "focus": 3 },
+    "actions": [
+      { "type": "APPLY_BUFF", "buff_id": "FOCUS", "value_ref": "focus" }
+    ]
+  },
+  {
+    "id": "zgl_scry_stars",
+    "name": "观星辨命",
+    "character": "ZHUGE_LIANG",
+    "rarity": "COMMON",
+    "type": "SKILL",
+    "cost": 1,
+    "target": "SELF",
+    "tags": ["TACTIC"],
+    "description": "【观星 4】：检视抽牌堆顶 4 张牌，可弃置任意张。随后抽取 {draw} 张牌。",
+    "base_stats": { "scry": 4, "draw": 2 },
+    "upgraded_stats": { "scry": 5, "draw": 2 },
+    "actions": [
+      { "type": "SCRY", "value": 4 },
+      { "type": "DRAW_CARD", "value_ref": "draw" }
+    ]
+  },
+  {
+    "id": "zgl_silk_bag",
+    "name": "锦囊天机",
+    "character": "ZHUGE_LIANG",
+    "rarity": "UNCOMMON",
+    "type": "SKILL",
+    "cost": 1,
+    "target": "SELF",
+    "retain": true,
+    "tags": ["TACTIC"],
+    "description": "【保留】。获得 {block} 点格挡。若此牌在【观星】或弃牌时被弃置，对全体敌军造成 8 点雷击伤害。",
+    "base_stats": { "block": 6 },
+    "upgraded_stats": { "block": 9 },
+    "actions": [
+      { "type": "GAIN_BLOCK", "value_ref": "block" }
+    ]
+  },
+  {
+    "id": "zgl_empty_city",
+    "name": "空城弄琴",
+    "character": "ZHUGE_LIANG",
+    "rarity": "RARE",
+    "type": "SKILL",
+    "cost": 2,
+    "target": "SELF",
+    "tags": ["DEFEND"],
+    "description": "获得 {block} 点格挡。若打出后手牌为空，获得【空城】状态（本回合受到的所有攻击伤害降低 50%）。",
+    "base_stats": { "block": 18 },
+    "upgraded_stats": { "block": 24 },
+    "actions": [
+      { "type": "GAIN_BLOCK", "value_ref": "block" },
+      { "type": "EMPTY_HAND_KONG_CHENG" }
+    ]
+  },
+  {
+    "id": "zgl_straw_boats",
+    "name": "草船借箭",
+    "character": "ZHUGE_LIANG",
+    "rarity": "UNCOMMON",
+    "type": "SKILL",
+    "cost": 1,
+    "target": "SELF",
+    "tags": ["DEFEND"],
+    "description": "获得 {block} 点格挡。下回合开始时，本回合每受到一次攻击抽取 1 张牌。",
+    "base_stats": { "block": 10 },
+    "upgraded_stats": { "block": 14 },
+    "actions": [
+      { "type": "GAIN_BLOCK", "value_ref": "block" },
+      { "type": "APPLY_BUFF", "buff_id": "STRAW_BOATS", "stacks": 1 }
+    ]
+  },
+  {
+    "id": "zgl_burning_chibi",
+    "name": "火烧赤壁",
+    "character": "ZHUGE_LIANG",
+    "rarity": "RARE",
+    "type": "ATTACK",
+    "cost": 2,
+    "target": "ALL_ENEMIES",
+    "combo_require": "WIND",
+    "tags": ["FIRE", "COMBO"],
+    "description": "对全体敌军造成 {damage} 点烈火伤害。若本回合触发了【东风】连环，伤害翻倍且附加 6 层【火油】！",
+    "base_stats": { "damage": 12 },
+    "upgraded_stats": { "damage": 16 },
+    "actions": [
+      { "type": "COMBO_DEAL_DAMAGE_ALL", "value_ref": "damage", "req_tag": "WIND" }
+    ]
+  },
+  {
+    "id": "zgl_evoke_all",
+    "name": "万象破阵",
+    "character": "ZHUGE_LIANG",
+    "rarity": "RARE",
+    "type": "SKILL",
+    "cost": 2,
+    "target": "SELF",
+    "tags": ["ORB"],
+    "description": "立即依次激发当前所有的【奇门阵眼】破阵效果！",
+    "base_stats": {},
+    "upgraded_stats": { "cost": 1 },
+    "actions": [
+      { "type": "EVOKE_ALL_ORBS" }
+    ]
+  }
+]

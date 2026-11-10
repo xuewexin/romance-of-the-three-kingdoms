@@ -1,0 +1,74 @@
+[
+  {
+    "id": "event_bone_scrape",
+    "title": "奇遇：刮骨疗毒",
+    "story": "偶遇神医华佗在军帐中研磨麻沸散。见你臂膀煞气缠绕，神医肃然道：“将军骨中有煞毒入髓，若不剔除，恐难渡此劫。”",
+    "backdrop": "healing_tent",
+    "options": [
+      {
+        "id": "opt_scrape",
+        "title": "【刮骨剔毒】",
+        "desc": "失去 15% 当前生命值，剔除骨髓煞气，获得神医赠予的灵丹（永久最大生命值 +8，并获得 100 铜钱）。"
+      },
+      {
+        "id": "opt_apply_ointment",
+        "title": "【温和敷药】",
+        "desc": "回复 30% 生命值，平安离开。"
+      }
+    ]
+  },
+  {
+    "id": "event_straw_boats",
+    "title": "奇遇：草船借箭",
+    "story": "大雾弥漫江面，隐约听得对岸擂鼓之声。曹军水寨乱箭如雨，你立于草船船头，羽箭密密麻麻扎于船舷稻草之上。",
+    "backdrop": "river_mist",
+    "options": [
+      {
+        "id": "opt_drum_arrows",
+        "title": "【擂鼓受箭】",
+        "desc": "承受 10 点流矢伤害，斩获万千羽箭，获得稀有兵符【元戎连弩机】！"
+      },
+      {
+        "id": "opt_retreat",
+        "title": "【顺流撤退】",
+        "desc": "乘雾安然返航，打捞江中漂浮辎重，获得 50 铜钱。"
+      }
+    ]
+  },
+  {
+    "id": "event_three_visits",
+    "title": "奇遇：三顾茅庐",
+    "story": "风雪交加的隆中草庐外，竹林潇潇。童子出门禀报：“先生正在堂内昼寝，未曾醒转。”",
+    "backdrop": "snow_cottage",
+    "options": [
+      {
+        "id": "opt_wait_respect",
+        "title": "【恭敬拱候】",
+        "desc": "在阶前静立良久，感念苍生。获得兵法启发，全队获得 1 点永久【武力】与 1 点【守备】！"
+      },
+      {
+        "id": "opt_leave_gift",
+        "title": "【留书奉礼】",
+        "desc": "献上 40 铜钱作为结缘之礼，获得稀有兵法卡《奇门遁甲》！"
+      }
+    ]
+  },
+  {
+    "id": "event_warm_wine",
+    "title": "奇遇：温酒斩将",
+    "story": "关外敌将策马搦战，帐中诸侯袁绍、袁术面面相觑。曹操温了一樽热酒，向你举杯：“将军饮此酒以壮胆魄！”",
+    "backdrop": "warlord_tent",
+    "options": [
+      {
+        "id": "opt_kill_instant",
+        "title": "【酒尚温，去去便回】",
+        "desc": "提刀出帐，斩杀贼将！获得传奇兵符【温酒金樽】与 80 铜钱！"
+      },
+      {
+        "id": "opt_drink_first",
+        "title": "【先饮尽此酒】",
+        "desc": "一饮而尽，气血沸腾！回复 20 点生命值并获得 50 铜钱。"
+      }
+    ]
+  }
+]

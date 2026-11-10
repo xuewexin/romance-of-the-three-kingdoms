@@ -1,0 +1,107 @@
+[
+  {
+    "enemy_id": "enemy_water_soldier",
+    "name": "江东死士",
+    "title": "死战不退",
+    "max_hp_range": [72, 80],
+    "moves": {
+      "WATER_BLADE": {
+        "intent_type": "ATTACK",
+        "base_damage": 14,
+        "hits": 1,
+        "description": "断浪斩：造成 14 点伤害",
+        "actions": [
+          { "type": "DEAL_DAMAGE", "value": 14 }
+        ]
+      },
+      "OIL_TORCH": {
+        "intent_type": "DEBUFF",
+        "description": "泼油引火：施加 6 层【火油】",
+        "actions": [
+          { "type": "APPLY_BUFF_PLAYER", "buff_id": "OIL_BURN", "stacks": 6 }
+        ]
+      }
+    },
+    "ai_pattern": {
+      "default_weights": {
+        "WATER_BLADE": 60,
+        "OIL_TORCH": 40
+      }
+    }
+  },
+  {
+    "enemy_id": "elite_dian_wei",
+    "name": "古之恶来·典韦",
+    "title": "逐虎过涧",
+    "max_hp_range": [140, 150],
+    "moves": {
+      "DEATH_DEFIANCE": {
+        "intent_type": "BUFF",
+        "description": "恶来怒吼：获得 6 层【刚烈】（反伤6）与 20 点格挡！",
+        "actions": [
+          { "type": "APPLY_BUFF", "target": "SELF", "buff_id": "THORNS", "stacks": 6 },
+          { "type": "GAIN_BLOCK", "target": "SELF", "value": 20 }
+        ]
+      },
+      "DUAL_HALBERD": {
+        "intent_type": "MULTI_ATTACK",
+        "base_damage": 10,
+        "hits": 2,
+        "description": "双戟重劈：造成 10x2 点巨力伤害！",
+        "actions": [
+          { "type": "DEAL_MULTI_DAMAGE", "value": 10, "hits": 2 }
+        ]
+      }
+    },
+    "ai_pattern": {
+      "turn_1": "DEATH_DEFIANCE",
+      "default_weights": {
+        "DUAL_HALBERD": 70,
+        "DEATH_DEFIANCE": 30
+      }
+    }
+  },
+  {
+    "enemy_id": "boss_cao_cao",
+    "name": "魏武霸王·曹操",
+    "title": "治世能臣，乱世奸雄",
+    "max_hp_range": [360, 380],
+    "moves": {
+      "HEROIC_BALLAD": {
+        "intent_type": "BUFF",
+        "description": "短歌行·对酒当歌：获得 4 点【武力】与 25 点格挡！",
+        "actions": [
+          { "type": "APPLY_BUFF", "target": "SELF", "buff_id": "STRENGTH", "stacks": 4 },
+          { "type": "GAIN_BLOCK", "target": "SELF", "value": 25 }
+        ]
+      },
+      "YITIAN_SWORD": {
+        "intent_type": "ATTACK",
+        "base_damage": 26,
+        "hits": 1,
+        "description": "倚天贯日：造成 26 点极烈穿心剑气！",
+        "actions": [
+          { "type": "DEAL_DAMAGE", "value": 26 }
+        ]
+      },
+      "ALL_HEROES_SURRENDER": {
+        "intent_type": "MULTI_ATTACK",
+        "base_damage": 8,
+        "hits": 4,
+        "description": "周公吐哺·天下归心：造成 8x4 点连击，并施加 2 层【破绽】！",
+        "actions": [
+          { "type": "DEAL_MULTI_DAMAGE", "value": 8, "hits": 4 },
+          { "type": "APPLY_BUFF_PLAYER", "buff_id": "VULNERABLE", "stacks": 2 }
+        ]
+      }
+    },
+    "ai_pattern": {
+      "turn_1": "HEROIC_BALLAD",
+      "default_weights": {
+        "YITIAN_SWORD": 45,
+        "ALL_HEROES_SURRENDER": 35,
+        "HEROIC_BALLAD": 20
+      }
+    }
+  }
+]

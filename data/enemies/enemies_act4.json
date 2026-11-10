@@ -1,0 +1,45 @@
+[
+  {
+    "enemy_id": "boss_destiny_spirit",
+    "name": "建安天命之灵",
+    "title": "九鼎煞气源核",
+    "max_hp_range": [480, 500],
+    "moves": {
+      "HISTORICAL_DECREE": {
+        "intent_type": "BUFF",
+        "description": "天命律令：获得 30 点格挡，获得 5 层【刚烈】！",
+        "actions": [
+          { "type": "GAIN_BLOCK", "target": "SELF", "value": 30 },
+          { "type": "APPLY_BUFF", "target": "SELF", "buff_id": "THORNS", "stacks": 5 }
+        ]
+      },
+      "SAMSARA_COLLAPSE": {
+        "intent_type": "ATTACK",
+        "base_damage": 32,
+        "hits": 1,
+        "description": "岁月湮灭：造成 32 点毁灭时空伤害！",
+        "actions": [
+          { "type": "DEAL_DAMAGE", "value": 32 },
+          { "type": "APPLY_BUFF_PLAYER", "buff_id": "FRAIL", "stacks": 3 }
+        ]
+      },
+      "NINE_TRIPODS_STORM": {
+        "intent_type": "MULTI_ATTACK",
+        "base_damage": 7,
+        "hits": 6,
+        "description": "九鼎碎裂：造成 7x6 点暴烈穿魂打击！",
+        "actions": [
+          { "type": "DEAL_MULTI_DAMAGE", "value": 7, "hits": 6 }
+        ]
+      }
+    },
+    "ai_pattern": {
+      "turn_1": "HISTORICAL_DECREE",
+      "default_weights": {
+        "SAMSARA_COLLAPSE": 40,
+        "NINE_TRIPODS_STORM": 40,
+        "HISTORICAL_DECREE": 20
+      }
+    }
+  }
+]

@@ -1,0 +1,257 @@
+[
+  {
+    "id": "gy_strike",
+    "name": "劈砍",
+    "character": "GUAN_YU",
+    "rarity": "COMMON",
+    "type": "ATTACK",
+    "cost": 1,
+    "target": "SINGLE_ENEMY",
+    "tags": ["BLADE", "STRIKE"],
+    "description": "造成 {damage} 点武技伤害。",
+    "base_stats": { "damage": 6 },
+    "upgraded_stats": { "damage": 9 },
+    "actions": [
+      { "type": "DEAL_DAMAGE", "value_ref": "damage" }
+    ]
+  },
+  {
+    "id": "gy_defend",
+    "name": "筑防",
+    "character": "GUAN_YU",
+    "rarity": "COMMON",
+    "type": "SKILL",
+    "cost": 1,
+    "target": "SELF",
+    "tags": ["DEFEND"],
+    "description": "获得 {block} 点格挡。",
+    "base_stats": { "block": 5 },
+    "upgraded_stats": { "block": 8 },
+    "actions": [
+      { "type": "GAIN_BLOCK", "value_ref": "block" }
+    ]
+  },
+  {
+    "id": "gy_warm_wine_slash",
+    "name": "温酒斩华雄",
+    "character": "GUAN_YU",
+    "rarity": "RARE",
+    "type": "ATTACK",
+    "cost": 2,
+    "target": "SINGLE_ENEMY",
+    "exhaust": true,
+    "tags": ["BLADE", "STRIKE"],
+    "description": "造成 {damage} 点伤害。【斩杀】：永久使此牌基础伤害增加 {meta_scale} 点，并恢复 2 点【军令】。【消耗】。",
+    "base_stats": { "damage": 16, "meta_scale": 4 },
+    "upgraded_stats": { "damage": 20, "meta_scale": 6 },
+    "actions": [
+      {
+        "type": "FATAL_DAMAGE",
+        "value_ref": "damage",
+        "on_fatal_actions": [
+          { "type": "PERMANENT_INCREASE_CARD_STAT", "stat": "damage", "value_ref": "meta_scale" },
+          { "type": "GAIN_ENERGY", "value": 2 }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "gy_drag_blade",
+    "name": "拖刀计",
+    "character": "GUAN_YU",
+    "rarity": "UNCOMMON",
+    "type": "SKILL",
+    "cost": 1,
+    "target": "SELF",
+    "tags": ["BLADE"],
+    "description": "获得 {block} 点格挡。获得 {blade_stance} 层【刀势】。",
+    "base_stats": { "block": 8, "blade_stance": 2 },
+    "upgraded_stats": { "block": 11, "blade_stance": 3 },
+    "actions": [
+      { "type": "GAIN_BLOCK", "value_ref": "block" },
+      { "type": "APPLY_BUFF", "buff_id": "BLADE_STANCE", "value_ref": "blade_stance" }
+    ]
+  },
+  {
+    "id": "gy_crescent_slash",
+    "name": "青龙偃月斩",
+    "character": "GUAN_YU",
+    "rarity": "RARE",
+    "type": "ATTACK",
+    "cost": 2,
+    "target": "SINGLE_ENEMY",
+    "tags": ["BLADE", "STRIKE"],
+    "description": "造成 {damage} 点重击。消耗所有【刀势】，每层额外造成双倍倍率的刀势伤害。",
+    "base_stats": { "damage": 14 },
+    "upgraded_stats": { "damage": 18 },
+    "actions": [
+      { "type": "CONSUME_BLADE_STANCE_SLASH", "value_ref": "damage" }
+    ]
+  },
+  {
+    "id": "gy_bone_scrape",
+    "name": "刮骨疗毒",
+    "character": "GUAN_YU",
+    "rarity": "UNCOMMON",
+    "type": "SKILL",
+    "cost": 0,
+    "target": "SELF",
+    "tags": ["SACRIFICE"],
+    "description": "失去 3 点生命值。解除自身所有负面状态，抽取 {draw} 张牌。",
+    "base_stats": { "draw": 2 },
+    "upgraded_stats": { "draw": 3 },
+    "actions": [
+      { "type": "LOSE_HP", "value": 3 },
+      { "type": "REMOVE_ALL_DEBUFFS" },
+      { "type": "DRAW_CARD", "value_ref": "draw" }
+    ]
+  },
+  {
+    "id": "gy_bloodstained_robe",
+    "name": "血染征袍",
+    "character": "GUAN_YU",
+    "rarity": "UNCOMMON",
+    "type": "ATTACK",
+    "cost": 2,
+    "target": "SINGLE_ENEMY",
+    "tags": ["STRIKE", "SACRIFICE"],
+    "description": "造成 {damage} 点伤害。本场战斗中你每主动失去一次生命，此牌伤害增加 4 点。",
+    "base_stats": { "damage": 12 },
+    "upgraded_stats": { "damage": 16 },
+    "actions": [
+      { "type": "BLOOD_SCALED_DAMAGE", "value_ref": "damage" }
+    ]
+  },
+  {
+    "id": "gy_never_retreat",
+    "name": "死战不退",
+    "character": "GUAN_YU",
+    "rarity": "RARE",
+    "type": "POWER",
+    "cost": 1,
+    "target": "SELF",
+    "description": "【兵法】：每当你在自己的回合失去生命，获得 {strength} 点【武力】。",
+    "base_stats": { "strength": 2 },
+    "upgraded_stats": { "strength": 3 },
+    "actions": [
+      { "type": "APPLY_BUFF", "buff_id": "BLOOD_RAGE", "value_ref": "strength" }
+    ]
+  },
+  {
+    "id": "gy_bridge_stand",
+    "name": "据水断桥",
+    "character": "GUAN_YU",
+    "rarity": "COMMON",
+    "type": "SKILL",
+    "cost": 2,
+    "target": "SELF",
+    "tags": ["DEFEND"],
+    "description": "严阵以待，获得 {block} 点格挡。",
+    "base_stats": { "block": 15 },
+    "upgraded_stats": { "block": 20 },
+    "actions": [
+      { "type": "GAIN_BLOCK", "value_ref": "block" }
+    ]
+  },
+  {
+    "id": "gy_iron_fortress",
+    "name": "铁桶军阵",
+    "character": "GUAN_YU",
+    "rarity": "RARE",
+    "type": "POWER",
+    "cost": 2,
+    "target": "SELF",
+    "description": "【兵法】：你的回合开始时，【格挡】不再清空。",
+    "base_stats": {},
+    "upgraded_stats": { "cost": 1 },
+    "actions": [
+      { "type": "APPLY_BUFF", "buff_id": "BARRICADE", "stacks": 1 }
+    ]
+  },
+  {
+    "id": "gy_shield_slam",
+    "name": "重甲冲锋",
+    "character": "GUAN_YU",
+    "rarity": "UNCOMMON",
+    "type": "ATTACK",
+    "cost": 2,
+    "target": "SINGLE_ENEMY",
+    "tags": ["STRIKE", "DEFEND"],
+    "description": "造成等同于你当前【格挡值】的兵刃伤害。",
+    "base_stats": {},
+    "upgraded_stats": { "cost": 1 },
+    "actions": [
+      { "type": "DAMAGE_EQUAL_TO_BLOCK" }
+    ]
+  },
+  {
+    "id": "gy_thousand_miles",
+    "name": "千里走单骑",
+    "character": "GUAN_YU",
+    "rarity": "UNCOMMON",
+    "type": "ATTACK",
+    "cost": 1,
+    "target": "SINGLE_ENEMY",
+    "tags": ["BLADE", "STRIKE"],
+    "description": "连斩 2 次，每次造成 {damage} 点伤害。获得 1 点【武力】。",
+    "base_stats": { "damage": 4 },
+    "upgraded_stats": { "damage": 6 },
+    "actions": [
+      { "type": "DEAL_DAMAGE", "value_ref": "damage", "hits": 2 },
+      { "type": "APPLY_BUFF", "buff_id": "STRENGTH", "value": 1 }
+    ]
+  },
+  {
+    "id": "gy_flood_armies",
+    "name": "水淹七军",
+    "character": "GUAN_YU",
+    "rarity": "RARE",
+    "type": "ATTACK",
+    "cost": 2,
+    "target": "ALL_ENEMIES",
+    "tags": ["TACTIC"],
+    "description": "对全体敌军造成 {damage} 点伤害，并施加 2 层【破绽】与 2 层【怯战】。",
+    "base_stats": { "damage": 10 },
+    "upgraded_stats": { "damage": 14 },
+    "actions": [
+      { "type": "DEAL_DAMAGE_ALL", "value_ref": "damage" },
+      { "type": "APPLY_BUFF_ALL", "buff_id": "VULNERABLE", "stacks": 2 },
+      { "type": "APPLY_BUFF_ALL", "buff_id": "WEAK", "stacks": 2 }
+    ]
+  },
+  {
+    "id": "gy_blade_focus",
+    "name": "养精蓄锐",
+    "character": "GUAN_YU",
+    "rarity": "COMMON",
+    "type": "SKILL",
+    "cost": 1,
+    "target": "SELF",
+    "tags": ["BLADE"],
+    "description": "获得 {blade_stance} 层【刀势】。抽取 1 张牌。",
+    "base_stats": { "blade_stance": 3 },
+    "upgraded_stats": { "blade_stance": 5 },
+    "actions": [
+      { "type": "APPLY_BUFF", "buff_id": "BLADE_STANCE", "value_ref": "blade_stance" },
+      { "type": "DRAW_CARD", "value": 1 }
+    ]
+  },
+  {
+    "id": "gy_righteous_oath",
+    "name": "桃园结义",
+    "character": "GUAN_YU",
+    "rarity": "UNCOMMON",
+    "type": "SKILL",
+    "cost": 0,
+    "target": "SELF",
+    "exhaust": true,
+    "tags": ["TACTIC"],
+    "description": "恢复 2 点【军令】，抽取 {draw} 张牌。【消耗】。",
+    "base_stats": { "draw": 2 },
+    "upgraded_stats": { "draw": 3 },
+    "actions": [
+      { "type": "GAIN_ENERGY", "value": 2 },
+      { "type": "DRAW_CARD", "value_ref": "draw" }
+    ]
+  }
+]

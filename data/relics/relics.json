@@ -1,0 +1,89 @@
+[
+  {
+    "id": "relic_beard",
+    "name": "武圣战髯",
+    "rarity": "STARTER",
+    "character": "GUAN_YU",
+    "description": "每场战斗结束时回复 6 点生命；若曾触发过【刀势】斩击，额外回复 4 点。",
+    "flavor": "美髯飘拂，英武绝伦，万军之中取上将首级如同探囊取物。"
+  },
+  {
+    "id": "relic_trigram",
+    "name": "乾坤八卦盘",
+    "rarity": "STARTER",
+    "character": "ZHUGE_LIANG",
+    "description": "每场战斗开始时，自动生成 1 个随机【奇门阵眼】并获得 1 点【运筹】。",
+    "flavor": "伏羲画卦，文王拘而演周易，武侯推演造化之玄机。"
+  },
+  {
+    "id": "relic_bell",
+    "name": "百翎惊帆铃",
+    "rarity": "STARTER",
+    "character": "GAN_NING",
+    "description": "每场战斗第一回合额外抽取 2 张牌，并将 1 张 0 费《袖箭》加入手牌。",
+    "flavor": "腰系铜铃，锦帆夜行。江东水匪闻铃声者，无不望风而逃。"
+  },
+  {
+    "id": "relic_red_hare",
+    "name": "赤兔马",
+    "rarity": "RARE",
+    "description": "第一回合开始时，恢复 1 点【军令】并额外抽取 2 张牌。",
+    "flavor": "人中有吕布，马中有赤兔。日行千里，渡水登山如履平地。"
+  },
+  {
+    "id": "relic_green_dragon_blade",
+    "name": "青龙偃月刀",
+    "rarity": "RARE",
+    "description": "打出的前 2 张武技牌造成的伤害增加 4 点。",
+    "flavor": "重八十二斤，冷艳锯霜寒，斩落阎罗惊鬼神。"
+  },
+  {
+    "id": "relic_farming_policy",
+    "name": "屯田策",
+    "rarity": "COMMON",
+    "description": "每回合开始时，自动获得 4 点【格挡】。",
+    "flavor": "耕战并进，储粮足兵，此乃经略中原之根本。"
+  },
+  {
+    "id": "relic_mende_book",
+    "name": "孟德新书",
+    "rarity": "UNCOMMON",
+    "description": "每当你打出 10 张牌，下一张打出的牌费用变为 0 费。",
+    "flavor": "曹操通晓兵法，仿十三篇而作，惜多散佚于火。"
+  },
+  {
+    "id": "relic_imperial_seal",
+    "name": "传国玉玺",
+    "rarity": "RARE",
+    "description": "击杀敌方首领或猛将时，回复 2 点【军令】并抽 2 张牌。",
+    "flavor": "受命于天，既寿永昌。得之者威加四海，失之者国破家亡。"
+  },
+  {
+    "id": "relic_rattan_armor",
+    "name": "乌戈藤甲",
+    "rarity": "UNCOMMON",
+    "description": "受到武技攻击伤害减少 3 点；但受到火焰/火油伤害增加 50%。",
+    "flavor": "浸油沉晒，刀箭皆不能入，唯独畏火。"
+  },
+  {
+    "id": "relic_warm_wine_goblet",
+    "name": "温酒金樽",
+    "rarity": "BOSS",
+    "description": "若在 3 回合内结束战斗，本场战斗获得铜钱翻倍并回复 10 点生命。",
+    "flavor": "酒尚温时提刀去，斩将归来酒尚香。"
+  },
+  {
+    "id": "relic_zhuge_crossbow",
+    "name": "元戎连弩机",
+    "rarity": "UNCOMMON",
+    "description": "每回合你打出的第三张攻击牌，额外对随机敌人触发一次 5 点穿刺伤害。",
+    "flavor": "以铁为矢，矢长八寸，一弩十矢俱发。"
+  },
+  {
+    "id": "relic_phoenix_feather",
+    "name": "凤雏羽扇",
+    "rarity": "RARE",
+    "description": "当你触发【连环计】时，额外抽 1 张牌并对全体敌人施加 1 层【破绽】。",
+    "flavor": "庞士元巧授连环计，赤壁烈火千载传。"
+  }
+]

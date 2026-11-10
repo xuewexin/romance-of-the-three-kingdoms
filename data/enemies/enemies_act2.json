@@ -1,0 +1,113 @@
+[
+  {
+    "enemy_id": "enemy_xiliang_cavalry",
+    "name": "西凉铁骑",
+    "title": "重装铁蹄",
+    "max_hp_range": [60, 68],
+    "moves": {
+      "IRON_CHARGE": {
+        "intent_type": "ATTACK",
+        "base_damage": 12,
+        "hits": 1,
+        "description": "铁骑冲锋：造成 12 点伤害，获得 6 点格挡",
+        "actions": [
+          { "type": "DEAL_DAMAGE", "value": 12 },
+          { "type": "GAIN_BLOCK", "target": "SELF", "value": 6 }
+        ]
+      },
+      "TRAMPLE": {
+        "intent_type": "MULTI_ATTACK",
+        "base_damage": 5,
+        "hits": 3,
+        "description": "乱军践踏：造成 5x3 点伤害",
+        "actions": [
+          { "type": "DEAL_MULTI_DAMAGE", "value": 5, "hits": 3 }
+        ]
+      }
+    },
+    "ai_pattern": {
+      "default_weights": {
+        "IRON_CHARGE": 50,
+        "TRAMPLE": 50
+      }
+    }
+  },
+  {
+    "enemy_id": "elite_gao_shun",
+    "name": "陷阵统领·高顺",
+    "title": "陷阵之志，有死无生",
+    "max_hp_range": [110, 120],
+    "moves": {
+      "IRON_WALL": {
+        "intent_type": "BUFF",
+        "description": "陷阵铁壁：获得 18 点格挡并获得 4 层【刚烈】（反伤）！",
+        "actions": [
+          { "type": "GAIN_BLOCK", "target": "SELF", "value": 18 },
+          { "type": "APPLY_BUFF", "target": "SELF", "buff_id": "THORNS", "stacks": 4 }
+        ]
+      },
+      "SPEAR_THRUST": {
+        "intent_type": "ATTACK",
+        "base_damage": 16,
+        "hits": 1,
+        "description": "破阵长枪：造成 16 点重击，施加 2 层【破绽】",
+        "actions": [
+          { "type": "DEAL_DAMAGE", "value": 16 },
+          { "type": "APPLY_BUFF_PLAYER", "buff_id": "VULNERABLE", "stacks": 2 }
+        ]
+      }
+    },
+    "ai_pattern": {
+      "turn_1": "IRON_WALL",
+      "default_weights": {
+        "SPEAR_THRUST": 65,
+        "IRON_WALL": 35
+      }
+    }
+  },
+  {
+    "enemy_id": "boss_lv_bu",
+    "name": "魔神飞将·吕布",
+    "title": "天下无双",
+    "max_hp_range": [300, 320],
+    "moves": {
+      "PEERLESS_STANCE": {
+        "intent_type": "BUFF",
+        "description": "无双霸气：获得 4 点【武力】与 15 点格挡！",
+        "actions": [
+          { "type": "APPLY_BUFF", "target": "SELF", "buff_id": "STRENGTH", "stacks": 4 },
+          { "type": "GAIN_BLOCK", "target": "SELF", "value": 15 }
+        ]
+      },
+      "FANGTIAN_SWEEP": {
+        "intent_type": "ATTACK",
+        "base_damage": 22,
+        "hits": 1,
+        "description": "方天乱舞：造成 22 点毁灭横扫！",
+        "actions": [
+          { "type": "DEAL_DAMAGE", "value": 22 }
+        ]
+      },
+      "GOD_OF_WAR_COMBO": {
+        "intent_type": "MULTI_ATTACK",
+        "base_damage": 7,
+        "hits": 5,
+        "description": "鬼神五连斩：造成 7x5 点狂暴连斩！",
+        "actions": [
+          { "type": "DEAL_MULTI_DAMAGE", "value": 7, "hits": 5 }
+        ]
+      }
+    },
+    "ai_pattern": {
+      "turn_1": "PEERLESS_STANCE",
+      "conditional": [
+        { "if_hp_below_pct": 50, "force_move": "GOD_OF_WAR_COMBO" }
+      ],
+      "default_weights": {
+        "FANGTIAN_SWEEP": 50,
+        "GOD_OF_WAR_COMBO": 30,
+        "PEERLESS_STANCE": 20
+      }
+    }
+  }
+]
