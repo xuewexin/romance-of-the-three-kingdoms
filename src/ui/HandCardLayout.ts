@@ -18,9 +18,9 @@ export class HandCardLayout {
     const stepAngle = cardsCount > 1 ? Math.min(5, (maxSpreadAngle * 2) / (cardsCount - 1)) : 0;
     const startAngle = -(stepAngle * (cardsCount - 1)) / 2;
 
-    const cardWidth = 145;
+    const cardWidth = 140;
     // Spacing between cards
-    const spacing = Math.min(cardWidth * 0.74, 640 / Math.max(cardsCount, 1));
+    const spacing = Math.min(cardWidth * 0.74, 620 / Math.max(cardsCount, 1));
     const startX = -((cardsCount - 1) * spacing) / 2;
 
     for (let i = 0; i < cardsCount; i++) {
@@ -28,7 +28,7 @@ export class HandCardLayout {
       const angle = Math.round((startAngle + i * stepAngle) * 10) / 10;
       // Arc curvature height: natural parabolic curve
       const normalizedDist = cardsCount > 1 ? (i - (cardsCount - 1) / 2) / ((cardsCount - 1) / 2) : 0;
-      let y = Math.round(Math.abs(normalizedDist) * 16);
+      let y = Math.round(Math.abs(normalizedDist) * 12);
       let zIndex = 10 + i;
 
       if (i === hoveredIndex) {

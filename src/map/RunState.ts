@@ -59,12 +59,45 @@ export class RunState {
     for (const node of this.mapNodes) {
       node.available = false;
     }
+    let hasAvailable = false;
     for (const childId of targetNode.children) {
       const child = this.mapNodes.find((n) => n.id === childId);
-      if (child) child.available = true;
+      if (child) {
+        child.available = true;
+        hasAvailable = true;
+      }
+    }
+
+    // 防卡死兜底保障：若当前节点无子节点或断链，强行激活下一层所有未访问节点
+    if (!hasAvailable && targetNode.floor < 14) {
+      const nextFloor = targetNode.floor + 1;
+      const nextNodes = this.mapNodes.filter((n) => n.floor === nextFloor && !n.visited);
+      for (const n of nextNodes) {
+        n.available = true;
+      }
     }
 
     return targetNode;
+  }
+
+  // 地图救援函数：如果由于任何历史原因导致无可用节点，自动救援下一层
+  public ensureNextFloorAvailable(): void {
+    const hasAnyAvailable = this.mapNodes.some((n) => n.available);
+    if (!hasAnyAvailable && this.currentFloor < 14) {
+      const nextFloor = this.currentFloor + 1;
+      const nextNodes = this.mapNodes.filter((n) => n.floor === nextFloor && !n.visited);
+      if (nextNodes.length > 0) {
+        for (const n of nextNodes) {
+          n.available = true;
+        }
+      } else {
+        // 如果第一层没走过
+        const floor0Nodes = this.mapNodes.filter((n) => n.floor === 0);
+        for (const n of floor0Nodes) {
+          n.available = true;
+        }
+      }
+    }
   }
 
   public heal(amount: number): number {

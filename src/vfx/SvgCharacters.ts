@@ -28,13 +28,31 @@ export class SvgCharacters {
     if (imgUrl) {
       return `
         <div class="character-warrior-figure ${isPlayer ? 'hero-warrior' : 'enemy-warrior'}" data-char-id="${id}">
+          <!-- Footstep ground contact shadow -->
           <div class="ground-contact-shadow"></div>
+
+          <!-- Dragon Qi / Martial Flames Aura -->
+          <div class="warrior-dragon-aura">
+            <div class="aura-flame flame-1"></div>
+            <div class="aura-flame flame-2"></div>
+          </div>
+
+          <!-- Living warrior silhouette body with organic contour (NO square cardboard borders) -->
           <div class="warrior-silhouette-body">
             <img src="${imgUrl}" alt="${name}" class="warrior-painted-portrait" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='block';" />
+            
+            <!-- Dynamic Green Dragon Crescent Blade Glimmer -->
+            <div class="blade-gleam-streak"></div>
+
+            <!-- Soft bottom mist blend -->
             <div class="feet-ink-gradient"></div>
+
+            <!-- Defensive Xuanwu Bagua Shield Barrier -->
             <div class="warrior-shield-barrier">
               <div class="barrier-trigram-ring">☯</div>
             </div>
+
+            <!-- Fallback vector SVG if image fails -->
             <div class="character-fallback-svg" style="display:none; width:100%; height:100%;">
               ${this.getCharacterSvg(id)}
             </div>
@@ -45,8 +63,12 @@ export class SvgCharacters {
     return `
       <div class="character-warrior-figure ${isPlayer ? 'hero-warrior' : 'enemy-warrior'}" data-char-id="${id}">
         <div class="ground-contact-shadow"></div>
+        <div class="warrior-dragon-aura">
+          <div class="aura-flame flame-1"></div>
+        </div>
         <div class="warrior-silhouette-body">
           ${this.getCharacterSvg(id)}
+          <div class="blade-gleam-streak"></div>
           <div class="feet-ink-gradient"></div>
           <div class="warrior-shield-barrier">
             <div class="barrier-trigram-ring">☯</div>

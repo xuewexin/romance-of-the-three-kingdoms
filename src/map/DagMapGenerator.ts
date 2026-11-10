@@ -85,6 +85,59 @@ export class DagMapGenerator {
         }
       }
 
+      // 1. 确保本层所有节点至少拥有 1 个通往下一层的通路，杜绝死胡同
+      for (const col of currentCols) {
+        const fromId = getNodeId(floor, col);
+        const fromNode = nodes.get(fromId);
+        if (fromNode && fromNode.children.length === 0) {
+          let targetCol = col;
+          if (nextColSet.size > 0) {
+            const arr = Array.from(nextColSet);
+            arr.sort((a, b) => Math.abs(a - col) - Math.abs(b - col));
+            targetCol = arr[0];
+          } else {
+            nextColSet.add(targetCol);
+          }
+          const toId = getNodeId(nextFloor, targetCol);
+          if (!nodes.has(toId)) {
+            nodes.set(toId, {
+              id: toId,
+              floor: nextFloor,
+              col: targetCol,
+              type: 'BATTLE',
+              children: [],
+              parents: []
+            });
+          }
+          const toNode = nodes.get(toId)!;
+          if (!fromNode.children.includes(toId)) fromNode.children.push(toId);
+          if (!toNode.parents.includes(fromId)) toNode.parents.push(fromId);
+          nextColSet.add(targetCol);
+        }
+      }
+
+      // 2. 确保下一层绝对有活跃列
+      if (nextColSet.size === 0) {
+        const fallbackCol = currentCols[0] ?? 3;
+        const toId = getNodeId(nextFloor, fallbackCol);
+        nodes.set(toId, {
+          id: toId,
+          floor: nextFloor,
+          col: fallbackCol,
+          type: 'BATTLE',
+          children: [],
+          parents: []
+        });
+        nextColSet.add(fallbackCol);
+        for (const col of currentCols) {
+          const fromNode = nodes.get(getNodeId(floor, col));
+          if (fromNode) {
+            fromNode.children.push(toId);
+            nodes.get(toId)!.parents.push(fromNode.id);
+          }
+        }
+      }
+
       // Ensure every node on next floor has at least one parent
       activeColsByFloor[nextFloor] = Array.from(nextColSet).sort((a, b) => a - b);
     }

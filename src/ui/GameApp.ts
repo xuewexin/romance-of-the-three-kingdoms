@@ -104,8 +104,10 @@ export class GameApp {
     };
 
     const strength = player?.buffs?.STRENGTH || 0;
+    const dexterity = player?.buffs?.DEXTERITY || 0;
 
-    return card.description.replace(/\{([a-zA-Z0-9_]+)\}/g, (_match, token) => {
+    return card.description.replace(/\{([a-zA-Z0-9_]+)\}/g, (_match, rawToken) => {
+      const token = rawToken.toLowerCase();
       if (token === 'damage') {
         const base = stats['damage'] ?? 6;
         const total = Math.max(0, base + strength);
@@ -118,21 +120,42 @@ export class GameApp {
       }
       if (token === 'block') {
         const blk = stats['block'] ?? 5;
-        return `<b class="stat-num stat-block">${blk}</b>`;
+        const total = Math.max(0, blk + dexterity);
+        if (dexterity > 0) {
+          return `<b class="stat-num stat-block stat-boosted">${total}</b>`;
+        } else if (dexterity < 0) {
+          return `<b class="stat-num stat-block stat-nerfed">${total}</b>`;
+        }
+        return `<b class="stat-num stat-block">${total}</b>`;
+      }
+      if (token === 'blade_stand' || token === 'blade_stance') {
+        const val = stats['blade_stance'] ?? stats['blade_stand'] ?? 2;
+        return `<b class="stat-num stat-blade_stance">${val}</b>`;
       }
       if (stats[token] !== undefined) {
         return `<b class="stat-num stat-${token}">${stats[token]}</b>`;
       }
+      if (stats[rawToken] !== undefined) {
+        return `<b class="stat-num stat-${token}">${stats[rawToken]}</b>`;
+      }
       const fallback: Record<string, number> = {
+        damage: 6,
+        block: 5,
         draw: 2,
         boost: 4,
         oil: 6,
         blade_stance: 2,
+        blade_stand: 2,
         focus: 2,
         meta_scale: 4,
-        dart_count: 2
+        dart_count: 2,
+        strength: 2,
+        dexterity: 2,
+        vulnerable: 2,
+        weak: 2
       };
-      return `<b class="stat-num">${fallback[token] ?? 1}</b>`;
+      const fallbackVal = fallback[token] ?? fallback[rawToken] ?? 2;
+      return `<b class="stat-num stat-${token}">${fallbackVal}</b>`;
     });
   }
 
@@ -205,7 +228,7 @@ export class GameApp {
     const target = this.runState.advanceToNode(node.id);
     if (!target) return;
 
-    this.soundEngine.playCardPlay();
+    this.soundEngine.playMarch();
 
     switch (target.type) {
       case 'BATTLE':
@@ -319,6 +342,7 @@ export class GameApp {
       (victory) => this.handleBattleEnded(victory)
     );
 
+    this.soundEngine.playWarDrum(1.2);
     this.screen = 'BATTLE';
     this.render();
     this.currentBattle.startBattle().then(() => this.render());
@@ -871,6 +895,9 @@ export class GameApp {
   }
 
   private renderMapScreen(): string {
+    // 自动救援保障：杜绝任何地图死胡同或断链卡死情况
+    this.runState.ensureNextFloorAvailable();
+
     const act = ACT_LORE[this.runState.act];
     const nodes = this.runState.mapNodes;
     const maxFloor = 14;
@@ -878,22 +905,31 @@ export class GameApp {
     let gridHtml = '';
     for (let floor = maxFloor; floor >= 0; floor--) {
       const floorNodes = nodes.filter((n) => n.floor === floor);
+      const isCurrentFloor = floor === this.runState.currentFloor;
       gridHtml += `
-        <div class="map-row" data-floor="${floor}">
+        <div class="map-row ${isCurrentFloor ? 'active-floor-row' : ''}" data-floor="${floor}">
           <span class="floor-label">第 ${floor + 1} 层</span>
           <div class="nodes-container">
             ${floorNodes
               .map((node) => {
                 const nodeIcon = GameIcons.getMapNodeSvg(node.type);
+                const isCurrentHeroLocation = this.runState.currentNodeId === node.id || (node.visited && node.floor === this.runState.currentFloor);
                 const statusClass = node.visited
                   ? 'visited'
                   : node.available
                   ? 'available'
                   : 'locked';
                 return `
-                <div class="map-node ${statusClass} node-type-${node.type.toLowerCase()}" 
+                <div class="map-node ${statusClass} node-type-${node.type.toLowerCase()} ${isCurrentHeroLocation ? 'hero-here' : ''}" 
                      data-id="${node.id}" title="${node.type}">
                   <span class="node-icon">${nodeIcon}</span>
+                  ${isCurrentHeroLocation ? `
+                    <div class="hero-marching-token" title="【主公大军驻扎于此】">
+                      <div class="marching-avatar">${this.runState.characterId === 'GUAN_YU' ? '关' : this.runState.characterId === 'ZHUGE_LIANG' ? '葛' : '宁'}</div>
+                      <div class="marching-pulse"></div>
+                      <div class="marching-tag">主公</div>
+                    </div>
+                  ` : ''}
                 </div>
               `;
               })
@@ -919,8 +955,13 @@ export class GameApp {
               <span class="legend-item">${GameIcons.NODE_BOSS} 守关大将</span>
             </div>
           </div>
-          <div class="map-scroll-area">
-            ${gridHtml}
+          <!-- Authentic Imperial Silk Map Scroll (无原生白色丑滑动条) -->
+          <div class="map-scroll-casing">
+            <div class="scroll-rod-cap rod-top"></div>
+            <div class="map-scroll-area" id="map-scroll-viewport">
+              ${gridHtml}
+            </div>
+            <div class="scroll-rod-cap rod-bottom"></div>
           </div>
         </div>
       </div>
@@ -1456,6 +1497,7 @@ export class GameApp {
     // Title buttons
     document.querySelectorAll('.start-btn').forEach((btn) => {
       btn.addEventListener('click', (e) => {
+        this.soundEngine.playWarDrum(1.2);
         const char = (e.currentTarget as HTMLElement).dataset.char as CharacterId;
         this.startNewGame(char);
       });
@@ -1464,6 +1506,7 @@ export class GameApp {
     // Prologue blessings
     document.querySelectorAll('.blessing-btn').forEach((btn) => {
       btn.addEventListener('click', (e) => {
+        this.soundEngine.playWarDrum(1.0);
         const blessing = (e.currentTarget as HTMLElement).dataset.blessing as any;
         this.chooseNeowBlessing(blessing);
       });
@@ -1479,6 +1522,19 @@ export class GameApp {
         }
       });
     });
+
+    // Map auto-scroll to current active floor smoothly (无需拖动滑动条)
+    if (this.screen === 'MAP') {
+      const mapViewport = document.getElementById('map-scroll-viewport');
+      if (mapViewport) {
+        setTimeout(() => {
+          const activeRow = mapViewport.querySelector(`.map-row[data-floor="${this.runState.currentFloor}"]`);
+          if (activeRow) {
+            (activeRow as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 50);
+      }
+    }
 
     // Click on enemies in battle (for targeting)
     document.querySelectorAll('.enemy-side').forEach((enemyEl) => {
@@ -1524,7 +1580,7 @@ export class GameApp {
     if (endTurnBtn) {
       endTurnBtn.addEventListener('click', () => {
         if (this.currentBattle) {
-          this.soundEngine.playCardPlay();
+          this.soundEngine.playGong();
           this.selectedCard = null;
           this.draggingCard = null;
           this.targetingArrow.hide();
@@ -1560,6 +1616,7 @@ export class GameApp {
     const proceedBtn = document.querySelector('.proceed-btn');
     if (proceedBtn) {
       proceedBtn.addEventListener('click', () => {
+        this.soundEngine.playMarch();
         this.screen = 'MAP';
         this.render();
       });
