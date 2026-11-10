@@ -229,33 +229,91 @@ body {
 .relics-bar {
   display: flex;
   gap: 8px;
-  max-width: 420px;
+  max-width: 480px;
   overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   align-items: center;
   padding: 4px 0;
   flex-shrink: 1;
 }
 
+.relics-bar::-webkit-scrollbar {
+  display: none;
+}
+
 .relic-item {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(212, 175, 55, 0.12);
-  border: 1.5px solid var(--ink-gold);
-  padding: 4px 10px;
-  border-radius: 6px;
+  background: linear-gradient(135deg, rgba(80, 20, 24, 0.9) 0%, rgba(35, 10, 12, 0.95) 100%);
+  border: 1.5px solid #d4af37;
+  padding: 5px 12px;
+  border-radius: 5px;
   font-size: 0.85rem;
-  color: var(--ink-gold);
-  cursor: help;
-  transition: transform 0.2s, box-shadow 0.2s;
+  color: #fce79f;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
   white-space: nowrap;
   flex-shrink: 0;
-  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.8), 0 2px 6px rgba(0, 0, 0, 0.6);
 }
 
 .relic-item:hover {
-  transform: translateY(-2px) scale(1.06);
-  box-shadow: 0 4px 14px rgba(212, 175, 55, 0.5);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.6);
+  border-color: #ffd700;
+  z-index: 100;
+}
+
+.relic-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 260px;
+  background: linear-gradient(180deg, #241410 0%, #120906 100%);
+  border: 1.5px solid #d4af37;
+  border-radius: 6px;
+  padding: 10px 14px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.95), inset 0 1px 0 rgba(255, 215, 0, 0.3);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+  z-index: 250;
+  white-space: normal;
+  text-align: left;
+}
+
+.relic-item:hover .relic-popover {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.relic-popover .popover-title {
+  color: #facc15;
+  font-weight: bold;
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+  padding-bottom: 4px;
+}
+
+.relic-popover .popover-desc {
+  color: #f1f5f9;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  margin-bottom: 6px;
+}
+
+.relic-popover .popover-flavor {
+  color: #ca8a04;
+  font-size: 0.78rem;
+  font-style: italic;
+  line-height: 1.35;
 }
 
 /* Scenery Background Layer */
@@ -645,141 +703,276 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
 }
 
-.character-standee {
+/* Authentic 2D Standing Three Kingdoms Warrior (No Box Borders) */
+.character-warrior-figure {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-.standee-inner {
-  width: 175px;
-  height: 235px;
-  border-radius: 16px 16px 8px 8px;
-  overflow: hidden;
-  position: relative;
-  background: #0d1117;
-  border: 2.5px solid var(--ink-border);
-  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.85);
-  animation: hero-idle-stance 3.6s ease-in-out infinite;
+  justify-content: flex-end;
+  width: 195px;
+  height: 255px;
   transform-origin: bottom center;
 }
 
-.player-sprite .standee-inner {
-  border-color: #38bdf8;
-  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.85), 0 0 24px rgba(56, 189, 248, 0.35);
+.ground-contact-shadow {
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 155px;
+  height: 26px;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.45) 45%, transparent 72%);
+  border-radius: 50%;
+  filter: blur(3px);
+  z-index: 1;
+  animation: shadow-breathe 3.6s ease-in-out infinite;
+  transform-origin: center center;
 }
 
-.enemy-sprite .standee-inner {
-  border-color: #ef4444;
-  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.85), 0 0 24px rgba(239, 68, 68, 0.35);
+.warrior-silhouette-body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: visible;
+  z-index: 2;
+  animation: hero-idle-breathing 3.6s ease-in-out infinite;
+  transform-origin: bottom center;
 }
 
-.character-portrait-img {
+.warrior-painted-portrait {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center top;
   display: block;
-  filter: contrast(1.1) brightness(0.96);
-  transition: transform 0.4s ease;
+  border-radius: 18px 18px 6px 6px;
+  /* Organic ink silhouette mask that fades at bottom seamlessly into battlefield */
+  mask-image: linear-gradient(to bottom, black 0%, black 76%, transparent 98%);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 76%, transparent 98%);
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.9));
+  transition: transform 0.3s ease, filter 0.3s ease;
 }
 
-.standee-inner:hover .character-portrait-img {
-  transform: scale(1.05);
+.hero-warrior .warrior-painted-portrait {
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 14px rgba(212, 175, 55, 0.3));
 }
 
-.standee-frame-rim {
+.enemy-warrior .warrior-painted-portrait {
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 14px rgba(239, 68, 68, 0.3));
+}
+
+.warrior-silhouette-body:hover .warrior-painted-portrait {
+  transform: scale(1.04);
+}
+
+.feet-ink-gradient {
   position: absolute;
-  inset: 0;
-  border: 1px solid rgba(255, 215, 0, 0.35);
-  border-radius: 14px 14px 6px 6px;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 45px;
+  background: linear-gradient(to top, rgba(10, 8, 8, 0.85) 0%, transparent 100%);
   pointer-events: none;
-  background: linear-gradient(180deg, rgba(255, 215, 0, 0.14) 0%, transparent 45%, rgba(0, 0, 0, 0.65) 100%);
+  z-index: 3;
 }
 
-.ground-shadow {
-  width: 145px;
-  height: 22px;
-  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.88) 0%, rgba(0, 0, 0, 0.35) 55%, transparent 80%);
-  border-radius: 50%;
-  margin-top: -8px;
-  animation: shadow-breathing 3.6s ease-in-out infinite;
-  transform-origin: center center;
+/* Defensive Eight Trigrams Barrier Dome */
+.warrior-shield-barrier {
+  position: absolute;
+  inset: -12px;
+  border: 2px solid rgba(56, 189, 248, 0);
+  border-radius: 50% 50% 40% 40%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 4;
+  opacity: 0;
+  transition: opacity 0.3s ease, border-color 0.3s ease;
 }
 
-/* 2D Combat Actions */
-@keyframes hero-idle-stance {
+.anim-shield-brace .warrior-shield-barrier {
+  opacity: 1;
+  border-color: #38bdf8;
+  background: radial-gradient(ellipse at center, rgba(56, 189, 248, 0.25) 0%, rgba(14, 165, 233, 0.08) 60%, transparent 100%);
+  box-shadow: 0 0 30px rgba(56, 189, 248, 0.7), inset 0 0 20px rgba(255, 255, 255, 0.4);
+}
+
+.barrier-trigram-ring {
+  font-size: 2.2rem;
+  color: #7dd3fc;
+  text-shadow: 0 0 15px #38bdf8;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: all 0.3s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+.anim-shield-brace .barrier-trigram-ring {
+  opacity: 1;
+  transform: scale(1.15) rotate(360deg);
+}
+
+/* Natural Idle Breathing & Ground Shadow Pulse */
+@keyframes hero-idle-breathing {
   0%, 100% {
     transform: translateY(0) scaleY(1) rotate(0deg);
   }
   50% {
-    transform: translateY(-9px) scaleY(1.028) scaleX(0.985) rotate(0.8deg);
+    transform: translateY(-8px) scaleY(1.025) scaleX(0.988) rotate(0.6deg);
   }
 }
 
-@keyframes shadow-breathing {
+@keyframes shadow-breathe {
   0%, 100% {
-    transform: scale(1);
-    opacity: 0.85;
+    transform: translateX(-50%) scale(1);
+    opacity: 0.9;
   }
   50% {
-    transform: scale(0.9, 0.8);
-    opacity: 0.55;
+    transform: translateX(-50%) scale(0.92, 0.82);
+    opacity: 0.6;
   }
 }
 
-/* Combat Attack, Hit Recoil & Shield Brace Animations */
-.anim-attack-player {
-  animation: lunge-attack-player 0.44s cubic-bezier(0.2, 0.9, 0.3, 1) forwards !important;
-  z-index: 50 !important;
+/* Combat Action Animations */
+
+/* 1. 英雄冲刺近身斩击：飞跃战场、贴身重击、腾跃回归 */
+.anim-hero-sprint-slash {
+  animation: hero-sprint-strike 0.55s cubic-bezier(0.18, 0.89, 0.32, 1) forwards !important;
+  z-index: 60 !important;
 }
 
-.anim-attack-enemy {
-  animation: lunge-attack-enemy 0.44s cubic-bezier(0.2, 0.9, 0.3, 1) forwards !important;
-  z-index: 50 !important;
+@keyframes hero-sprint-strike {
+  0% {
+    transform: translate(0, 0) scale(1);
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.8));
+  }
+  24% {
+    /* 迅疾前冲，身体前倾带残影 */
+    transform: translate(calc(var(--dash-distance, 380px) * 0.7), -10px) skewX(-14deg) scale(1.12);
+    filter: drop-shadow(0 10px 25px rgba(245, 158, 11, 0.7));
+  }
+  48% {
+    /* 冲至敌方面前：力劈华山重刃暴击 */
+    transform: translate(var(--dash-distance, 380px), 10px) rotate(10deg) scale(1.24);
+    filter: drop-shadow(0 0 40px #ffd700) brightness(1.3);
+  }
+  70% {
+    /* 凌空借力向后倒跃 */
+    transform: translate(calc(var(--dash-distance, 380px) * 0.35), -22px) rotate(-8deg) scale(1.06);
+  }
+  100% {
+    /* 稳健落回本位 */
+    transform: translate(0, 0) scale(1);
+  }
 }
 
+/* 2. 敌军突袭冲刺 */
+.anim-enemy-sprint-slash {
+  animation: enemy-sprint-strike 0.55s cubic-bezier(0.18, 0.89, 0.32, 1) forwards !important;
+  z-index: 60 !important;
+}
+
+@keyframes enemy-sprint-strike {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  24% {
+    transform: translate(calc(var(--dash-distance, -380px) * 0.7), -10px) skewX(14deg) scale(1.12);
+    filter: drop-shadow(0 10px 25px rgba(239, 68, 68, 0.7));
+  }
+  48% {
+    transform: translate(var(--dash-distance, -380px), 10px) rotate(-10deg) scale(1.24);
+    filter: drop-shadow(0 0 40px #ef4444) brightness(1.3);
+  }
+  70% {
+    transform: translate(calc(var(--dash-distance, -380px) * 0.35), -22px) rotate(8deg) scale(1.06);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+/* 3. 真实受击踉跄：暴退、通红闪烁 */
 .anim-hit-recoil {
-  animation: hit-recoil-stagger 0.4s ease-out forwards !important;
-}
-
-.anim-shield-brace {
-  animation: shield-brace-barrier 0.4s ease-out forwards !important;
-}
-
-@keyframes lunge-attack-player {
-  0% { transform: translateX(0) scale(1); }
-  22% { transform: translateX(-35px) rotate(-6deg) scale(0.94); filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.5)); }
-  52% { transform: translateX(140px) rotate(8deg) scale(1.15); filter: drop-shadow(0 0 25px #ffd700); }
-  72% { transform: translateX(90px) scale(1.04); }
-  100% { transform: translateX(0) scale(1); }
-}
-
-@keyframes lunge-attack-enemy {
-  0% { transform: translateX(0) scale(1); }
-  22% { transform: translateX(35px) rotate(6deg) scale(0.94); filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.5)); }
-  52% { transform: translateX(-140px) rotate(-8deg) scale(1.15); filter: drop-shadow(0 0 25px #ef4444); }
-  72% { transform: translateX(-90px) scale(1.04); }
-  100% { transform: translateX(0) scale(1); }
+  animation: hit-recoil-stagger 0.44s ease-out forwards !important;
 }
 
 @keyframes hit-recoil-stagger {
-  0% { transform: translateX(0) scale(1); filter: brightness(1); }
-  20% { transform: translateX(36px) rotate(7deg) scale(0.92); filter: brightness(2.8) contrast(1.8) drop-shadow(0 0 25px #ef4444); }
-  45% { transform: translateX(-12px) rotate(-2deg); filter: brightness(1.4); }
-  70% { transform: translateX(8px); }
-  100% { transform: translateX(0) scale(1); filter: brightness(1); }
+  0% {
+    transform: translate(0, 0) scale(1);
+    filter: brightness(1);
+  }
+  20% {
+    transform: translate(-42px, -6px) rotate(-10deg) scale(0.92);
+    filter: brightness(2.6) sepia(0.8) hue-rotate(-50deg) drop-shadow(0 0 30px #ef4444);
+  }
+  45% {
+    transform: translate(-20px, 4px) rotate(-4deg);
+    filter: brightness(1.4);
+  }
+  75% {
+    transform: translate(-8px, -2px);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+    filter: brightness(1);
+  }
 }
 
-@keyframes shield-brace-barrier {
+/* 4. 真实防御御守姿态 */
+.anim-shield-brace {
+  animation: hero-defend-stance 0.48s ease-out forwards !important;
+}
+
+@keyframes hero-defend-stance {
   0% { transform: scale(1); }
-  35% { transform: scale(1.12); filter: drop-shadow(0 0 35px #3b82f6) brightness(1.3); }
-  70% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+  25% { transform: translate(-16px, 4px) rotate(-4deg) scale(0.97); }
+  60% { transform: translate(-8px, 2px) rotate(-2deg) scale(0.98); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+/* 5. 战胜高呼姿态 */
+.anim-victory-pose {
+  animation: hero-victory-cheer 1.8s ease-in-out infinite alternate !important;
+  z-index: 50 !important;
+}
+
+@keyframes hero-victory-cheer {
+  0% {
+    transform: translateY(-8px) scale(1.06);
+    filter: drop-shadow(0 0 25px #ffd700);
+  }
+  100% {
+    transform: translateY(-24px) scale(1.15);
+    filter: drop-shadow(0 0 45px #f59e0b) drop-shadow(0 0 15px #ffd700);
+  }
+}
+
+/* 6. 战败横刀半跪 */
+.anim-defeat-kneel {
+  animation: hero-defeat-collapse 1.2s ease-out forwards !important;
+}
+
+@keyframes hero-defeat-collapse {
+  0% {
+    transform: translateY(0) scale(1);
+    filter: brightness(1);
+  }
+  40% {
+    transform: translateY(20px) rotate(8deg) scale(0.95);
+    filter: grayscale(0.5);
+  }
+  100% {
+    transform: translateY(45px) rotate(16deg) scale(0.85);
+    filter: grayscale(1) brightness(0.6) opacity(0.7);
+  }
 }
 
 .character-svg {
@@ -988,44 +1181,64 @@ body {
   100% { transform: rotate(360deg); }
 }
 
-/* Battle Controls - Authentic Three Kingdoms Command Station */
+/* Battle Bottom Command Deck (Hosts Controls strictly ABOVE Hand) */
+.battle-bottom-deck {
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  z-index: 25;
+  margin-top: auto;
+  pointer-events: none;
+}
+
+/* Battle Controls Bar - Authentic Three Kingdoms Command Station */
 .battle-controls {
-  height: 64px;
+  pointer-events: auto;
+  height: 56px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 40px;
-  z-index: 20;
-  gap: 20px;
-  margin-bottom: 6px;
+  padding: 0 42px;
+  z-index: 40;
+  gap: 16px;
+  margin-bottom: 2px;
 }
 
-/* Eight Trigrams Bronze Crucible Energy (八卦聚气青铜鼎) */
+/* Eight Trigrams Bronze Crucible Energy (八卦军令青铜宝鼎) */
 .energy-crucible {
-  width: 76px;
-  height: 76px;
-  min-width: 76px;
-  min-height: 76px;
+  width: 74px;
+  height: 74px;
+  min-width: 74px;
+  min-height: 74px;
   aspect-ratio: 1 / 1;
   border-radius: 50%;
-  background: radial-gradient(circle at 40% 35%, #ffd166 0%, #b45309 60%, #451a03 100%);
-  border: 3px solid #f59e0b;
-  box-shadow: 0 0 25px rgba(245, 158, 11, 0.7), inset 0 2px 6px rgba(255, 255, 255, 0.6), inset 0 -2px 6px rgba(0, 0, 0, 0.8);
+  background: radial-gradient(circle at 40% 30%, #f59e0b 0%, #b45309 45%, #451a03 85%, #1c0a00 100%);
+  border: 3px double #fde047;
+  box-shadow: 0 0 22px rgba(245, 158, 11, 0.75), inset 0 2px 4px rgba(255, 255, 255, 0.7), inset 0 -3px 8px rgba(0, 0, 0, 0.9);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   position: relative;
   flex-shrink: 0;
-  transform: translateY(-8px);
+  cursor: help;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.energy-crucible:hover {
+  transform: scale(1.06);
+  box-shadow: 0 0 30px rgba(251, 191, 36, 0.95);
 }
 
 .crucible-trigram-ring {
   position: absolute;
-  font-size: 0.58rem;
-  color: rgba(255, 240, 180, 0.45);
-  letter-spacing: 3px;
-  top: 4px;
+  font-size: 0.62rem;
+  color: rgba(254, 240, 138, 0.75);
+  letter-spacing: 2.5px;
+  top: 5px;
+  text-shadow: 0 0 6px #f59e0b;
 }
 
 .crucible-core {
@@ -1034,24 +1247,25 @@ body {
   justify-content: center;
   gap: 2px;
   line-height: 1;
-  margin-top: 4px;
+  margin-top: 5px;
 }
 
 .crucible-core .energy-val {
   font-size: 1.85rem;
   font-weight: 900;
   color: #fff;
-  text-shadow: 0 2px 4px #000, 0 0 10px rgba(255, 255, 255, 0.6);
+  text-shadow: 0 2px 4px #000, 0 0 12px rgba(255, 215, 0, 0.8);
+  font-family: var(--font-serif);
 }
 
 .crucible-core .energy-slash {
-  font-size: 1.05rem;
-  color: rgba(255, 255, 255, 0.7);
+  font-size: 1rem;
+  color: rgba(255, 240, 180, 0.7);
 }
 
 .crucible-core .energy-max {
   font-size: 1.15rem;
-  color: rgba(255, 255, 255, 0.9);
+  color: #fef08a;
   font-weight: bold;
 }
 
@@ -1061,9 +1275,10 @@ body {
   letter-spacing: 2px;
   margin-top: 2px;
   text-shadow: 0 1px 2px #000;
+  font-weight: bold;
 }
 
-/* Military Command Slips (三军简牍) */
+/* Three Kingdoms Bamboo Ledger Command Slips (青铜战策简牍) */
 .deck-slips-container {
   display: flex;
   gap: 12px;
@@ -1076,50 +1291,62 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: linear-gradient(180deg, #261b14 0%, #150d08 100%);
-  border: 1.5px solid #8c6a28;
-  border-radius: 5px;
-  padding: 5px 14px;
-  box-shadow: inset 0 1px 0 rgba(255, 215, 0, 0.2), 0 3px 8px rgba(0, 0, 0, 0.6);
+  background: linear-gradient(180deg, #2c1a12 0%, #170d08 100%);
+  border: 1.5px solid #9a6d2b;
+  border-radius: 4px;
+  padding: 6px 14px;
+  box-shadow: inset 0 1px 0 rgba(255, 215, 0, 0.25), 0 3px 8px rgba(0, 0, 0, 0.8);
   white-space: nowrap;
   flex-shrink: 0;
+  cursor: default;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.military-slip:hover {
+  border-color: #f59e0b;
+  transform: translateY(-1px);
 }
 
 .military-slip .slip-icon {
   display: flex;
   align-items: center;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8));
 }
 
 .military-slip .slip-title {
-  font-size: 0.82rem;
-  color: #d1d5db;
+  font-size: 0.84rem;
+  color: #e5e7eb;
   font-weight: bold;
+  font-family: var(--font-serif);
+  letter-spacing: 1px;
 }
 
 .military-slip .slip-count {
-  font-size: 0.95rem;
-  color: #fce79f;
+  font-size: 1rem;
+  color: #ffd700;
   font-weight: 900;
-  min-width: 16px;
+  min-width: 18px;
   text-align: center;
+  text-shadow: 0 0 6px rgba(255, 215, 0, 0.5);
 }
 
 .military-hint-ribbon {
-  background: linear-gradient(180deg, #2a2010 0%, #1a1206 100%);
+  background: linear-gradient(180deg, #322212 0%, #1e1308 100%);
   border-color: #d4af37;
   color: #fef08a;
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-weight: bold;
+  letter-spacing: 1px;
 }
 
-/* Grand Tiger Tally End Turn Button (鸣金收兵虎符大印) */
+/* Imperial Tiger Tally End Turn Button (鸣金收兵朱砂虎符令) */
 .tiger-tally-btn {
-  width: 175px;
+  width: 185px;
   height: 52px;
   flex-shrink: 0;
   white-space: nowrap;
-  background: linear-gradient(135deg, #a71d2a 0%, #5c0f16 100%);
-  border: 2px solid #e2b04a;
+  background: linear-gradient(135deg, #b91c1c 0%, #7f1d1d 50%, #450a0a 100%);
+  border: 2px solid #ffd700;
   border-radius: 6px;
   color: #fff;
   cursor: pointer;
@@ -1127,7 +1354,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 18px rgba(167, 29, 42, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 20px rgba(185, 28, 28, 0.7), inset 0 1px 3px rgba(255, 255, 255, 0.5), inset 0 -2px 4px rgba(0, 0, 0, 0.8);
   transition: all 0.2s cubic-bezier(0.2, 0.9, 0.3, 1);
   letter-spacing: 2px;
   font-family: var(--font-serif);
@@ -1135,10 +1362,14 @@ body {
 }
 
 .tiger-tally-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #c02c38 0%, #7a141d 100%);
-  border-color: #ffd700;
-  box-shadow: 0 6px 24px rgba(212, 175, 55, 0.6), inset 0 1px 4px rgba(255, 255, 255, 0.6);
-  transform: translateY(-2px) scale(1.02);
+  background: linear-gradient(135deg, #dc2626 0%, #991b1b 50%, #5c0f16 100%);
+  border-color: #fef08a;
+  box-shadow: 0 6px 28px rgba(212, 175, 55, 0.8), inset 0 1px 4px rgba(255, 255, 255, 0.8);
+  transform: translateY(-2px) scale(1.03);
+}
+
+.tiger-tally-btn:active:not(:disabled) {
+  transform: translateY(1px) scale(0.98);
 }
 
 .tiger-tally-btn:disabled {
@@ -1148,29 +1379,27 @@ body {
 }
 
 .tiger-tally-btn .tally-title {
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   font-weight: 900;
   color: #fef08a;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 8px rgba(212, 175, 55, 0.4);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9), 0 0 10px rgba(255, 215, 0, 0.6);
 }
 
 .tiger-tally-btn .tally-turn {
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(255, 255, 255, 0.9);
   letter-spacing: 1px;
 }
 
-/* Hand Cards Flat Tray */
+/* Hand Cards Flat Tray - Strictly positioned UNDER controls bar */
 .hand-container {
-  height: 180px;
-  position: absolute;
-  bottom: 0;
-  left: 0;
+  height: 175px;
+  position: relative;
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  padding-bottom: 8px;
+  padding-bottom: 6px;
   z-index: 30;
   pointer-events: none;
 }
@@ -1428,4 +1657,280 @@ body {
 @keyframes slide-in {
   from { transform: translateX(50px); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }
+}
+
+/* Card Desc Dynamic Calculated Numbers */
+.card-desc .stat-num {
+  font-weight: 900;
+  padding: 0 3px;
+  font-size: 1.08em;
+  font-family: var(--font-sans);
+}
+
+.card-desc .stat-dmg {
+  color: #fbbf24;
+  text-shadow: 0 0 8px rgba(251, 191, 36, 0.4);
+}
+
+.card-desc .stat-block {
+  color: #38bdf8;
+  text-shadow: 0 0 8px rgba(56, 189, 248, 0.4);
+}
+
+.card-desc .stat-boosted {
+  color: #4ade80 !important;
+  text-shadow: 0 0 10px rgba(74, 222, 128, 0.8) !important;
+}
+
+.card-desc .stat-nerfed {
+  color: #f87171 !important;
+}
+
+.card-desc .stat-oil {
+  color: #fb923c;
+}
+
+.card-desc .stat-blade_stance {
+  color: #c084fc;
+}
+
+.card-desc .stat-focus {
+  color: #38bdf8;
+}
+
+/* Start Cover Screen */
+.start-cover-screen {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.cover-fullscreen {
+  height: 100vh !important;
+  max-height: 100vh !important;
+}
+
+.cover-overlay-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.45) 0%, rgba(10, 8, 8, 0.94) 85%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.cover-hero-content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 680px;
+  padding: 40px;
+  animation: cover-fade-in 0.8s ease-out;
+}
+
+@keyframes cover-fade-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.cover-dragon-crest {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 0 25px rgba(212, 175, 55, 0.8));
+  margin-bottom: 12px;
+  transform: scale(1.4);
+}
+
+.cover-dynasty-badge {
+  font-size: 0.88rem;
+  letter-spacing: 4px;
+  color: #ffd700;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  background: rgba(40, 15, 18, 0.8);
+  padding: 4px 18px;
+  border-radius: 20px;
+  margin-bottom: 14px;
+}
+
+.cover-main-title {
+  font-size: 3.8rem;
+  font-weight: 900;
+  color: #fef08a;
+  letter-spacing: 6px;
+  text-shadow: 0 4px 15px rgba(0, 0, 0, 0.95), 0 0 35px rgba(212, 175, 55, 0.6);
+  margin-bottom: 6px;
+  font-family: var(--font-serif);
+}
+
+.cover-sub-title {
+  font-size: 1.35rem;
+  color: #fca5a5;
+  letter-spacing: 4px;
+  margin-bottom: 18px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+  font-family: var(--font-serif);
+}
+
+.cover-tagline {
+  font-size: 0.95rem;
+  color: #cbd5e1;
+  font-style: italic;
+  line-height: 1.6;
+  margin-bottom: 34px;
+  max-width: 520px;
+}
+
+.cover-menu-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  width: 100%;
+}
+
+.cover-primary-btn {
+  width: 290px;
+  height: 58px;
+  background: linear-gradient(135deg, #b91c1c 0%, #7f1d1d 60%, #450a0a 100%);
+  border: 2px solid #ffd700;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 1.25rem;
+  font-weight: 900;
+  letter-spacing: 3px;
+  font-family: var(--font-serif);
+  box-shadow: 0 6px 25px rgba(185, 28, 28, 0.8), inset 0 1px 2px rgba(255, 255, 255, 0.5);
+  transition: all 0.22s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+.cover-primary-btn:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #991b1b 60%, #5c0f16 100%);
+  border-color: #fef08a;
+  box-shadow: 0 8px 32px rgba(212, 175, 55, 0.9), inset 0 1px 4px rgba(255, 255, 255, 0.8);
+  transform: translateY(-2px) scale(1.04);
+}
+
+.cover-secondary-group {
+  display: flex;
+  gap: 16px;
+}
+
+.cover-secondary-btn {
+  background: linear-gradient(180deg, #261b14 0%, #150d08 100%);
+  border: 1.5px solid #8c6a28;
+  border-radius: 5px;
+  color: #fce79f;
+  padding: 8px 22px;
+  font-size: 0.95rem;
+  font-family: var(--font-serif);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.6);
+}
+
+.cover-secondary-btn:hover {
+  border-color: #ffd700;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.cover-footer-info {
+  margin-top: 36px;
+  font-size: 0.8rem;
+  color: #64748b;
+  letter-spacing: 1px;
+}
+
+/* Cover Modal Popup */
+.cover-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  animation: cover-fade-in 0.2s ease-out;
+}
+
+.cover-modal-dialog {
+  max-width: 620px;
+  width: 90%;
+  background: linear-gradient(180deg, #1c1410 0%, #0d0907 100%);
+  border: 2px solid #d4af37;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.95);
+}
+
+.cover-modal-dialog .modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1.5px solid rgba(212, 175, 55, 0.4);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.cover-modal-dialog .modal-header h3 {
+  color: #ffd700;
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.close-modal-btn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.close-modal-btn:hover {
+  color: #ef4444;
+}
+
+.lore-modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 400px;
+  overflow-y: auto;
+  text-align: left;
+}
+
+.lore-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 6px;
+  padding: 12px 16px;
+}
+
+.lore-card h4 {
+  color: #facc15;
+  margin-top: 0;
+  margin-bottom: 6px;
+  font-size: 1.05rem;
+}
+
+.lore-card p {
+  font-size: 0.88rem;
+  line-height: 1.5;
+  margin: 4px 0;
+  color: #cbd5e1;
 }

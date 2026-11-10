@@ -39,7 +39,7 @@ export class DealDamageAction extends GameAction {
 
     if (ctx.vfxManager) {
       if (this.source && this.source.id) {
-        ctx.vfxManager.triggerAttackAnimation(this.source.id);
+        ctx.vfxManager.triggerAttackAnimation(this.source.id, this.target ? this.target.id : undefined);
       }
       if (this.target && this.target.id) {
         ctx.vfxManager.triggerHitAnimation(this.target.id);

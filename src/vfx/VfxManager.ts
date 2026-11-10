@@ -37,7 +37,7 @@ export class VfxManager {
     requestAnimationFrame(loop);
   }
 
-  // Character strike action animations
+  // Character combat action animations
   private getUnitElement(unitId: string): HTMLElement | null {
     if (!unitId) return null;
     if (unitId === 'player' || unitId === 'GUAN_YU' || unitId === 'ZHUGE_LIANG' || unitId === 'GAN_NING') {
@@ -46,30 +46,66 @@ export class VfxManager {
     return document.getElementById(`unit-${unitId}`) || document.getElementById('unit-player');
   }
 
-  public triggerAttackAnimation(sourceId: string): void {
-    const el = this.getUnitElement(sourceId);
-    if (!el) return;
+  // 1. 真实攻击动作：疾步冲刺近身、挥刀/扇劈斩、凌空翻回
+  public triggerAttackAnimation(sourceId: string, targetId?: string): void {
+    const sourceEl = this.getUnitElement(sourceId);
+    if (!sourceEl) return;
     const isPlayer = sourceId === 'player' || sourceId === 'GUAN_YU' || sourceId === 'ZHUGE_LIANG' || sourceId === 'GAN_NING';
-    const animClass = isPlayer ? 'anim-attack-player' : 'anim-attack-enemy';
-    el.classList.remove('anim-attack-player', 'anim-attack-enemy');
-    void el.offsetWidth;
-    el.classList.add(animClass);
+
+    // 计算攻击冲刺距离 (目标在视野中的横向差值)
+    let dashDistance = isPlayer ? 380 : -380;
+    if (targetId) {
+      const targetEl = this.getUnitElement(targetId);
+      if (targetEl) {
+        const sourceRect = sourceEl.getBoundingClientRect();
+        const targetRect = targetEl.getBoundingClientRect();
+        const deltaX = (targetRect.left + targetRect.width / 2) - (sourceRect.left + sourceRect.width / 2);
+        // 冲刺到敌方面前 (保持80px安全打击身位)
+        dashDistance = isPlayer ? Math.max(180, deltaX - 90) : Math.min(-180, deltaX + 90);
+      }
+    }
+
+    sourceEl.style.setProperty('--dash-distance', `${dashDistance}px`);
+    const animClass = isPlayer ? 'anim-hero-sprint-slash' : 'anim-enemy-sprint-slash';
+    sourceEl.classList.remove('anim-hero-sprint-slash', 'anim-enemy-sprint-slash', 'anim-hit-recoil', 'anim-shield-brace');
+    void sourceEl.offsetWidth;
+    sourceEl.classList.add(animClass);
+
     setTimeout(() => {
-      el.classList.remove(animClass);
-    }, 450);
+      sourceEl.classList.remove(animClass);
+    }, 560);
   }
 
+  // 2. 真实受击动作：重创震退、血墨飞溅、通体赤红闪烁
   public triggerHitAnimation(targetId: string): void {
     const el = this.getUnitElement(targetId);
     if (!el) return;
     el.classList.remove('anim-hit-recoil');
     void el.offsetWidth;
     el.classList.add('anim-hit-recoil');
+
+    // 溅射受击墨滴粒子
+    const pos = this.getTargetCenter({ id: targetId });
+    for (let i = 0; i < 12; i++) {
+      this.particles.push({
+        x: pos.x + (Math.random() - 0.5) * 40,
+        y: pos.y + (Math.random() - 0.5) * 40,
+        vx: (Math.random() - 0.5) * 8,
+        vy: -Math.random() * 6 - 2,
+        size: Math.random() * 8 + 4,
+        color: Math.random() > 0.4 ? '#b91c1c' : '#18181b',
+        life: 1.0,
+        decay: 0.05,
+        type: 'slash_ink'
+      });
+    }
+
     setTimeout(() => {
       el.classList.remove('anim-hit-recoil');
-    }, 400);
+    }, 450);
   }
 
+  // 3. 真实防御姿态：横刀架御、玄武金光八卦护盾绽放
   public triggerDefendAnimation(targetId: string): void {
     const el = this.getUnitElement(targetId);
     if (!el) return;
@@ -78,7 +114,56 @@ export class VfxManager {
     el.classList.add('anim-shield-brace');
     setTimeout(() => {
       el.classList.remove('anim-shield-brace');
-    }, 400);
+    }, 480);
+  }
+
+  // 4. 真实战胜姿态：高举神兵、金芒万丈、三军振臂
+  public triggerVictoryAnimation(playerId: string = 'player'): void {
+    const el = this.getUnitElement(playerId);
+    if (!el) return;
+    el.classList.add('anim-victory-pose');
+    this.screenShake(6, 400);
+
+    // 庆祝金雨与华光粒子
+    const center = this.getTargetCenter({ id: playerId });
+    for (let i = 0; i < 40; i++) {
+      const angle = (i / 40) * Math.PI * 2;
+      const speed = Math.random() * 6 + 2;
+      this.particles.push({
+        x: center.x,
+        y: center.y - 30,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 2,
+        size: Math.random() * 7 + 4,
+        color: ['#ffd700', '#f59e0b', '#fef08a', '#fbbf24'][Math.floor(Math.random() * 4)],
+        life: 1.2,
+        decay: 0.025,
+        type: 'buff'
+      });
+    }
+  }
+
+  // 5. 真实战败动作：力竭败阵、横刀半跪、消融于水墨迷障
+  public triggerDefeatAnimation(playerId: string = 'player'): void {
+    const el = this.getUnitElement(playerId);
+    if (!el) return;
+    el.classList.add('anim-defeat-kneel');
+    this.screenShake(10, 500);
+
+    const center = this.getTargetCenter({ id: playerId });
+    for (let i = 0; i < 25; i++) {
+      this.particles.push({
+        x: center.x + (Math.random() - 0.5) * 50,
+        y: center.y + 20,
+        vx: (Math.random() - 0.5) * 3,
+        vy: -Math.random() * 4 - 1,
+        size: Math.random() * 12 + 6,
+        color: '#27272a',
+        life: 1.0,
+        decay: 0.02,
+        type: 'slash_ink'
+      });
+    }
   }
 
   public screenShake(intensity: number = 8, durationMs: number = 200): void {

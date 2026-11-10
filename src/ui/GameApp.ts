@@ -29,6 +29,7 @@ import enemiesAct4 from '../../data/enemies/enemies_act4.json';
 import eventsData from '../../data/events/events.json';
 
 export type GameScreen =
+  | 'START_COVER'
   | 'TITLE'
   | 'PROLOGUE'
   | 'MAP'
@@ -42,7 +43,7 @@ export type GameScreen =
   | 'DEFEAT';
 
 export class GameApp {
-  public screen: GameScreen = 'TITLE';
+  public screen: GameScreen = 'START_COVER';
   public runState: RunState;
   public soundEngine: SoundEngine;
   public vfxManager: VfxManager;
@@ -93,6 +94,46 @@ export class GameApp {
     const el = document.getElementById('toast-container');
     if (!el) return;
     el.innerHTML = this.toasts.map((t) => `<div class="toast-message">${t}</div>`).join('');
+  }
+
+  public formatCardDescription(card: CardData, player?: any): string {
+    if (!card || !card.description) return '';
+    const stats: Record<string, number> = {
+      ...(card.base_stats || {}),
+      ...(card.upgraded && card.upgraded_stats ? card.upgraded_stats : {})
+    };
+
+    const strength = player?.buffs?.STRENGTH || 0;
+
+    return card.description.replace(/\{([a-zA-Z0-9_]+)\}/g, (_match, token) => {
+      if (token === 'damage') {
+        const base = stats['damage'] ?? 6;
+        const total = Math.max(0, base + strength);
+        if (strength > 0) {
+          return `<b class="stat-num stat-dmg stat-boosted">${total}</b>`;
+        } else if (strength < 0) {
+          return `<b class="stat-num stat-dmg stat-nerfed">${total}</b>`;
+        }
+        return `<b class="stat-num stat-dmg">${total}</b>`;
+      }
+      if (token === 'block') {
+        const blk = stats['block'] ?? 5;
+        return `<b class="stat-num stat-block">${blk}</b>`;
+      }
+      if (stats[token] !== undefined) {
+        return `<b class="stat-num stat-${token}">${stats[token]}</b>`;
+      }
+      const fallback: Record<string, number> = {
+        draw: 2,
+        boost: 4,
+        oil: 6,
+        blade_stance: 2,
+        focus: 2,
+        meta_scale: 4,
+        dart_count: 2
+      };
+      return `<b class="stat-num">${fallback[token] ?? 1}</b>`;
+    });
   }
 
   public startNewGame(charId: CharacterId): void {
@@ -328,6 +369,8 @@ export class GameApp {
 
       if (isBoss) {
         if (this.runState.act >= 4) {
+          this.soundEngine.playVictory();
+          this.vfxManager.triggerVictoryAnimation('player');
           this.screen = 'VICTORY';
           this.render();
           return;
@@ -337,11 +380,19 @@ export class GameApp {
         }
       }
 
-      this.screen = 'REWARD';
-      this.render();
+      this.soundEngine.playVictory();
+      this.vfxManager.triggerVictoryAnimation('player');
+      setTimeout(() => {
+        this.screen = 'REWARD';
+        this.render();
+      }, 700);
     } else {
-      this.screen = 'DEFEAT';
-      this.render();
+      this.soundEngine.playDefeat();
+      this.vfxManager.triggerDefeatAnimation('player');
+      setTimeout(() => {
+        this.screen = 'DEFEAT';
+        this.render();
+      }, 900);
     }
   }
 
@@ -602,52 +653,64 @@ export class GameApp {
     const root = document.getElementById('game-app');
     if (!root) return;
 
-    let html = `
-      <header class="game-header">
-        <div class="brand-plaque">
-          <div class="dragon-crest">${GameIcons.DRAGON_SEAL}</div>
-          <div class="brand-title">乱世残卷 · 建安魔障</div>
-        </div>
-        <div class="military-stats-board">
-          <div class="hero-hp-vessel">
-            <div class="vessel-badge">${GameIcons.HP_HEART}</div>
-            <div class="vessel-info">
-              <span class="vessel-label">气血</span>
-              <span class="vessel-val"><b>${this.runState.currentHp}</b> / ${this.runState.maxHp}</span>
+    let html = '';
+    if (this.screen !== 'START_COVER') {
+      html += `
+        <header class="game-header">
+          <div class="brand-plaque">
+            <div class="dragon-crest">${GameIcons.DRAGON_SEAL}</div>
+            <div class="brand-title">乱世残卷 · 建安魔障</div>
+          </div>
+          <div class="military-stats-board">
+            <div class="hero-hp-vessel">
+              <div class="vessel-badge">${GameIcons.HP_HEART}</div>
+              <div class="vessel-info">
+                <span class="vessel-label">气血</span>
+                <span class="vessel-val"><b>${this.runState.currentHp}</b> / ${this.runState.maxHp}</span>
+              </div>
+            </div>
+            <div class="military-treasury-tally">
+              <div class="tally-badge">${GameIcons.COIN}</div>
+              <div class="tally-info">
+                <span class="tally-label">军饷</span>
+                <span class="tally-val"><b>${this.runState.gold}</b> 铢</span>
+              </div>
+            </div>
+            <div class="campaign-map-tablet">
+              <div class="tablet-badge">${GameIcons.MAP_SCROLL}</div>
+              <div class="tablet-info">
+                <span class="tablet-label">战役</span>
+                <span class="tablet-val">第 <b>${this.runState.act}</b> 幕 · <b>${this.runState.currentFloor + 1}</b> 层</span>
+              </div>
             </div>
           </div>
-          <div class="military-treasury-tally">
-            <div class="tally-badge">${GameIcons.COIN}</div>
-            <div class="tally-info">
-              <span class="tally-label">军饷</span>
-              <span class="tally-val"><b>${this.runState.gold}</b> 铢</span>
-            </div>
+          <div class="relics-bar">
+            ${this.runState.relics
+              .map(
+                (r) => `
+              <div class="relic-item">
+                <span class="relic-icon">${GameIcons.RELIC_SEAL}</span>
+                <span class="relic-name">${r.name}</span>
+                <div class="relic-popover">
+                  <div class="popover-title">【${r.name}】</div>
+                  <div class="popover-desc">${r.description}</div>
+                  <div class="popover-flavor">“${r.flavor}”</div>
+                </div>
+              </div>
+            `
+              )
+              .join('')}
           </div>
-          <div class="campaign-map-tablet">
-            <div class="tablet-badge">${GameIcons.MAP_SCROLL}</div>
-            <div class="tablet-info">
-              <span class="tablet-label">战役</span>
-              <span class="tablet-val">第 <b>${this.runState.act}</b> 幕 · <b>${this.runState.currentFloor + 1}</b> 层</span>
-            </div>
-          </div>
-        </div>
-        <div class="relics-bar">
-          ${this.runState.relics
-            .map(
-              (r) => `
-            <div class="relic-item" title="${r.name}：${r.description}&#10;“${r.flavor}”">
-              <span class="relic-icon">${GameIcons.RELIC_SEAL}</span>
-              <span class="relic-name">${r.name}</span>
-            </div>
-          `
-            )
-            .join('')}
-        </div>
-      </header>
-      <main class="game-content">
-    `;
+        </header>
+      `;
+    }
+
+    html += `<main class="game-content ${this.screen === 'START_COVER' ? 'cover-fullscreen' : ''}">`;
 
     switch (this.screen) {
+      case 'START_COVER':
+        html += this.renderStartCoverScreen();
+        break;
       case 'TITLE':
         html += this.renderTitleScreen();
         break;
@@ -685,11 +748,66 @@ export class GameApp {
     this.bindEvents();
   }
 
+  private renderStartCoverScreen(): string {
+    return `
+      <div class="start-cover-screen">
+        ${SvgBackgrounds.getActBackground(3)}
+        <div class="cover-overlay-vignette"></div>
+
+        <div class="cover-hero-content">
+          <div class="cover-dragon-crest">${GameIcons.DRAGON_SEAL}</div>
+          <div class="cover-dynasty-badge">建安年间 · 东方国风卡牌构筑肉鸽</div>
+          <h1 class="cover-main-title">乱世残卷</h1>
+          <div class="cover-sub-title">建安魔障 · 杀伐天地</div>
+          <div class="cover-tagline">“熹平九鼎崩，妖道弄天机。执三尺青锋，横渡万重血关！”</div>
+
+          <!-- Main Menu Action Buttons -->
+          <div class="cover-menu-actions">
+            <button class="cover-primary-btn start-campaign-btn">
+              <span class="btn-crest">${GameIcons.SWORD_ATTACK}</span>
+              <span class="btn-text">征战四方 · 开始游戏</span>
+            </button>
+
+            <div class="cover-secondary-group">
+              <button class="cover-secondary-btn heroes-lore-btn">
+                <span class="btn-icon">${GameIcons.SCROLL_SKILL}</span>
+                <span>武将列传</span>
+              </button>
+              <button class="cover-secondary-btn archive-btn">
+                <span class="btn-icon">${GameIcons.RELIC_SEAL}</span>
+                <span>战役秘卷</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="cover-footer-info">
+            <span>三国题材 DBG Roguelike · 纯血国风商业级重构版</span>
+          </div>
+        </div>
+
+        <!-- Lore modal popup -->
+        <div id="cover-modal-container" class="cover-modal-backdrop" style="display: none;">
+          <div class="cover-modal-dialog ink-card">
+            <div class="modal-header">
+              <h3 id="cover-modal-title">武将列传</h3>
+              <button class="close-modal-btn">✕</button>
+            </div>
+            <div id="cover-modal-body" class="modal-body"></div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
   private renderTitleScreen(): string {
     return `
       <div class="title-screen-container">
         ${SvgBackgrounds.getActBackground(1)}
         <div class="title-screen ink-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 8px;">
+            <button class="btn-secondary back-to-cover-btn">◀ 返回封面大厅</button>
+            <span style="color: var(--ink-gold); font-size: 0.9rem;">建安元年 · 豪杰并起</span>
+          </div>
           <h1 class="main-title">乱世残卷：建安魔障</h1>
           <p class="subtitle">三国题材卡牌构筑肉鸽（DBG Roguelike）</p>
           <p class="tagline">“熹平九鼎崩，天下英雄皆入魔障。持南华仙书，重定乾坤之序！”</p>
@@ -927,83 +1045,86 @@ export class GameApp {
           </div>
         </div>
 
-        <!-- Controls / Energy / End Turn -->
-        <div class="battle-controls">
-          <!-- Eight Trigrams Bronze Energy Crucible -->
-          <div class="energy-crucible" title="主公军令 (出牌所需点数)">
-            <div class="crucible-trigram-ring">☰☱☲☳☴☵☶☷</div>
-            <div class="crucible-core">
-              <span class="energy-val">${player.energy}</span>
-              <span class="energy-slash">/</span>
-              <span class="energy-max">${player.maxEnergy}</span>
-            </div>
-            <div class="crucible-label">军令</div>
-          </div>
-
-          <!-- Military Command Slips (Deck Counts) -->
-          <div class="deck-slips-container">
-            <div class="military-slip" title="尚存可用军令牌">
-              <span class="slip-icon">${GameIcons.DRAW_PILE}</span>
-              <span class="slip-title">牌堆</span>
-              <span class="slip-count">${this.currentBattle.deckManager.getDrawPile().length}</span>
-            </div>
-            <div class="military-slip" title="已打出及弃置战牌">
-              <span class="slip-icon">${GameIcons.DISCARD_PILE}</span>
-              <span class="slip-title">弃牌</span>
-              <span class="slip-count">${this.currentBattle.deckManager.getDiscardPile().length}</span>
-            </div>
-            <div class="military-slip" title="战局中已焚毁战策">
-              <span class="slip-icon">${GameIcons.EXHAUST_PILE}</span>
-              <span class="slip-title">损耗</span>
-              <span class="slip-count">${this.currentBattle.deckManager.getExhaustPile().length}</span>
-            </div>
-            <div class="military-slip military-hint-ribbon">
-              <span>点击或向上拖拽出牌</span>
-            </div>
-          </div>
-
-          <!-- Grand Tiger Tally End Turn Button -->
-          <button class="tiger-tally-btn end-turn-btn" ${this.currentBattle.phase !== 'PLAYER_ACTION' ? 'disabled' : ''}>
-            <div class="tally-face">
-              <div class="tally-title">鸣金收兵</div>
-              <div class="tally-turn">第 ${this.currentBattle.turnCount} 回合</div>
-            </div>
-          </button>
-        </div>
-
-        <!-- Hand Cards Flat Tray -->
-        <div class="hand-container">
-          ${hand
-            .map((card, idx) => {
-              const tf = transforms[idx] || { translateX: 0, translateY: 0, rotateDeg: 0, zIndex: 10 };
-              const canAfford = player.energy >= card.cost;
-              const isSelected = this.selectedCard === card;
-              const hasCombo =
-                card.combo_require &&
-                this.currentBattle?.playedTagsThisTurn.includes(card.combo_require);
-
-              const cardIconSvg =
-                card.type === 'ATTACK'
-                  ? GameIcons.SWORD_ATTACK
-                  : card.type === 'SKILL'
-                  ? GameIcons.SCROLL_SKILL
-                  : GameIcons.POWER_TALLY;
-
-              return `
-              <div class="hand-card card-type-${card.type.toLowerCase()} ${canAfford ? 'affordable' : 'unaffordable'} ${isSelected ? 'selected' : ''} ${hasCombo ? 'combo-active' : ''}"
-                   data-index="${idx}"
-                   style="--card-x: ${tf.translateX}px; --card-y: ${tf.translateY}px; --card-rot: ${tf.rotateDeg}deg; z-index: ${isSelected ? 120 : tf.zIndex};">
-                <div class="card-cost">${card.cost}</div>
-                <div class="card-name">${card.name}</div>
-                <div class="card-type-label">${card.type === 'ATTACK' ? '武技' : card.type === 'SKILL' ? '韬略' : '兵法'}</div>
-                <div class="card-art">${cardIconSvg}</div>
-                <div class="card-desc">${card.description}</div>
-                <div class="card-play-hint">${canAfford ? '【出牌】' : '【军令不足】'}</div>
-                ${card.exhaust ? '<div class="card-badge">消耗</div>' : ''}
+        <!-- Bottom Command Deck: Controls positioned strictly ABOVE Hand -->
+        <div class="battle-bottom-deck">
+          <!-- Battle Controls Bar -->
+          <div class="battle-controls">
+            <!-- Eight Trigrams Bronze Energy Crucible -->
+            <div class="energy-crucible" title="主公军令 (出牌所需点数)">
+              <div class="crucible-trigram-ring">☰☱☲☳☴☵☶☷</div>
+              <div class="crucible-core">
+                <span class="energy-val">${player.energy}</span>
+                <span class="energy-slash">/</span>
+                <span class="energy-max">${player.maxEnergy}</span>
               </div>
-            `;
-            })
-            .join('')}
+              <div class="crucible-label">军令</div>
+            </div>
+
+            <!-- Military Command Slips (Deck Counts) -->
+            <div class="deck-slips-container">
+              <div class="military-slip" title="尚存可用军令牌">
+                <span class="slip-icon">${GameIcons.DRAW_PILE}</span>
+                <span class="slip-title">牌堆</span>
+                <span class="slip-count">${this.currentBattle.deckManager.getDrawPile().length}</span>
+              </div>
+              <div class="military-slip" title="已打出及弃置战牌">
+                <span class="slip-icon">${GameIcons.DISCARD_PILE}</span>
+                <span class="slip-title">弃牌</span>
+                <span class="slip-count">${this.currentBattle.deckManager.getDiscardPile().length}</span>
+              </div>
+              <div class="military-slip" title="战局中已焚毁战策">
+                <span class="slip-icon">${GameIcons.EXHAUST_PILE}</span>
+                <span class="slip-title">损耗</span>
+                <span class="slip-count">${this.currentBattle.deckManager.getExhaustPile().length}</span>
+              </div>
+              <div class="military-slip military-hint-ribbon">
+                <span>点击卡牌或向上拖拽出牌</span>
+              </div>
+            </div>
+
+            <!-- Grand Tiger Tally End Turn Button -->
+            <button class="tiger-tally-btn end-turn-btn" ${this.currentBattle.phase !== 'PLAYER_ACTION' ? 'disabled' : ''}>
+              <div class="tally-face">
+                <div class="tally-title">鸣金收兵</div>
+                <div class="tally-turn">第 ${this.currentBattle.turnCount} 回合</div>
+              </div>
+            </button>
+          </div>
+
+          <!-- Hand Cards Flat Tray (strictly below controls bar) -->
+          <div class="hand-container">
+            ${hand
+              .map((card, idx) => {
+                const tf = transforms[idx] || { translateX: 0, translateY: 0, rotateDeg: 0, zIndex: 10 };
+                const canAfford = player.energy >= card.cost;
+                const isSelected = this.selectedCard === card;
+                const hasCombo =
+                  card.combo_require &&
+                  this.currentBattle?.playedTagsThisTurn.includes(card.combo_require);
+
+                const cardIconSvg =
+                  card.type === 'ATTACK'
+                    ? GameIcons.SWORD_ATTACK
+                    : card.type === 'SKILL'
+                    ? GameIcons.SCROLL_SKILL
+                    : GameIcons.POWER_TALLY;
+
+                return `
+                <div class="hand-card card-type-${card.type.toLowerCase()} ${canAfford ? 'affordable' : 'unaffordable'} ${isSelected ? 'selected' : ''} ${hasCombo ? 'combo-active' : ''}"
+                     data-index="${idx}"
+                     style="--card-x: ${tf.translateX}px; --card-y: ${tf.translateY}px; --card-rot: ${tf.rotateDeg}deg; z-index: ${isSelected ? 120 : tf.zIndex};">
+                  <div class="card-cost">${card.cost}</div>
+                  <div class="card-name">${card.name}</div>
+                  <div class="card-type-label">${card.type === 'ATTACK' ? '武技' : card.type === 'SKILL' ? '韬略' : '兵法'}</div>
+                  <div class="card-art">${cardIconSvg}</div>
+                  <div class="card-desc">${this.formatCardDescription(card, player)}</div>
+                  <div class="card-play-hint">${canAfford ? '【出牌】' : '【军令不足】'}</div>
+                  ${card.exhaust ? '<div class="card-badge">消耗</div>' : ''}
+                </div>
+              `;
+              })
+              .join('')}
+          </div>
         </div>
       </div>
     `;
@@ -1043,7 +1164,7 @@ export class GameApp {
                   <div class="card-cost">${card.cost}</div>
                   <div class="card-name">${card.name}</div>
                   <div class="card-type-label">${card.type === 'ATTACK' ? '武技' : card.type === 'SKILL' ? '韬略' : '兵法'}</div>
-                  <div class="card-desc">${card.description}</div>
+                  <div class="card-desc">${this.formatCardDescription(card)}</div>
                   <button class="btn-secondary pick-card-btn" data-card-idx="${idx}">收录此牌</button>
                 </div>
               `
@@ -1093,7 +1214,7 @@ export class GameApp {
                 <div class="reward-card forge-card-pick" data-card-id="${c.id}">
                   <div class="card-cost">${c.cost}</div>
                   <div class="card-name">${c.name}</div>
-                  <div class="card-desc">${c.description}</div>
+                  <div class="card-desc">${this.formatCardDescription(c)}</div>
                   <button class="btn-secondary">淬炼升级</button>
                 </div>
               `
@@ -1123,7 +1244,7 @@ export class GameApp {
                 <div class="shop-card-item card-type-${item.card.type.toLowerCase()}" data-shop-card-idx="${idx}">
                   <div class="card-cost">${item.card.cost}</div>
                   <div class="card-name">${item.card.name}</div>
-                  <div class="card-desc">${item.card.description}</div>
+                  <div class="card-desc">${this.formatCardDescription(item.card)}</div>
                   <div class="shop-price">${GameIcons.COIN} <span>${item.price} 铢</span></div>
                   <button class="btn-primary buy-card-btn" data-shop-card-idx="${idx}">购买</button>
                 </div>
@@ -1237,6 +1358,101 @@ export class GameApp {
   }
 
   private bindEvents(): void {
+    // Start cover screen buttons
+    const startCampaignBtn = document.querySelector('.start-campaign-btn');
+    if (startCampaignBtn) {
+      startCampaignBtn.addEventListener('click', () => {
+        this.soundEngine.playVictory();
+        this.screen = 'TITLE';
+        this.render();
+      });
+    }
+
+    const backToCoverBtn = document.querySelector('.back-to-cover-btn');
+    if (backToCoverBtn) {
+      backToCoverBtn.addEventListener('click', () => {
+        this.soundEngine.playCardPlay();
+        this.screen = 'START_COVER';
+        this.render();
+      });
+    }
+
+    const heroesLoreBtn = document.querySelector('.heroes-lore-btn');
+    if (heroesLoreBtn) {
+      heroesLoreBtn.addEventListener('click', () => {
+        const modal = document.getElementById('cover-modal-container');
+        const title = document.getElementById('cover-modal-title');
+        const body = document.getElementById('cover-modal-body');
+        if (modal && title && body) {
+          title.textContent = '【武将列传 · 英雄天机】';
+          body.innerHTML = `
+            <div class="lore-modal-content">
+              <div class="lore-card">
+                <h4>关羽 · 武圣</h4>
+                <p><b>战斗流派：</b>陷阵狂刀 · 刀势蓄力与刮骨血怒</p>
+                <p><b>传世兵符：</b>【武圣战髯】（首回合恢复军令并多抽战牌）</p>
+                <p><b>特色战术：</b>积累【刀势】层数，释放《温酒斩华雄》《青龙偃月斩》瞬间破阵斩杀！</p>
+              </div>
+              <div class="lore-card">
+                <h4>诸葛亮 · 卧龙</h4>
+                <p><b>战斗流派：</b>奇门八阵 · 四象阵眼与借东风连环</p>
+                <p><b>传世兵符：</b>【乾坤八卦盘】（开局布设火石雷霆阵眼）</p>
+                <p><b>特色战术：</b>运筹帷幄，激发四象阵眼降下天雷地火与东风狂澜！</p>
+              </div>
+              <div class="lore-card">
+                <h4>甘宁 · 锦帆</h4>
+                <p><b>战斗流派：</b>火油覆阵 · 0费袖箭与百骑劫营</p>
+                <p><b>传世兵符：</b>【百翎惊帆铃】（回合初获0费绝杀袖箭）</p>
+                <p><b>特色战术：</b>火油引爆敌阵，连绵不绝的袖箭如骤雨狂飙！</p>
+              </div>
+            </div>
+          `;
+          modal.style.display = 'flex';
+        }
+      });
+    }
+
+    const archiveBtn = document.querySelector('.archive-btn');
+    if (archiveBtn) {
+      archiveBtn.addEventListener('click', () => {
+        const modal = document.getElementById('cover-modal-container');
+        const title = document.getElementById('cover-modal-title');
+        const body = document.getElementById('cover-modal-body');
+        if (modal && title && body) {
+          title.textContent = '【战役秘卷 · 乱世四幕】';
+          body.innerHTML = `
+            <div class="lore-modal-content">
+              <div class="lore-card">
+                <h4>第一幕 · 颍川黄巾（太平魔道）</h4>
+                <p>张角手持太平天书，引黄巾力士与符水道士席卷中原。击破张角雷火妖法，斩断初阶魔障。</p>
+              </div>
+              <div class="lore-card">
+                <h4>第二幕 · 虎牢关下（飞将鬼神）</h4>
+                <p>吕布乘赤兔马持方天画戟，西凉并州铁骑如铜墙铁壁。唯有以计破力，方可越过雄关！</p>
+              </div>
+              <div class="lore-card">
+                <h4>第三幕 · 赤壁大火（乱世枭雄）</h4>
+                <p>曹孟德八十万水陆联军锁江而立。借东风引燃漫天烈焰，水淹华容！</p>
+              </div>
+              <div class="lore-card">
+                <h4>第四幕 · 九鼎祭坛（天命魔障）</h4>
+                <p>熹平九鼎残存的天地气运汇聚成天命心魔。战胜心魔执念，天下方能终归太平！</p>
+              </div>
+            </div>
+          `;
+          modal.style.display = 'flex';
+        }
+      });
+    }
+
+    const closeModalBtn = document.querySelector('.close-modal-btn');
+    if (closeModalBtn) {
+      closeModalBtn.addEventListener('click', () => {
+        const modal = document.getElementById('cover-modal-container');
+        if (modal) modal.style.display = 'none';
+      });
+    }
+
     // Title buttons
     document.querySelectorAll('.start-btn').forEach((btn) => {
       btn.addEventListener('click', (e) => {

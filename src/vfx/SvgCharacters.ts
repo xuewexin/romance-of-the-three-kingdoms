@@ -23,28 +23,35 @@ export class SvgCharacters {
   }
 
   public static renderUnitVisual(id: string, name: string): string {
+    const isPlayer = id === 'GUAN_YU' || id === 'ZHUGE_LIANG' || id === 'GAN_NING' || id === 'player';
     const imgUrl = this.getUnitImageUrl(id);
     if (imgUrl) {
       return `
-        <div class="character-standee unit-figure">
-          <div class="standee-inner">
-            <img src="${imgUrl}" alt="${name}" class="character-portrait-img" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='block';" />
-            <div class="standee-frame-rim"></div>
+        <div class="character-warrior-figure ${isPlayer ? 'hero-warrior' : 'enemy-warrior'}" data-char-id="${id}">
+          <div class="ground-contact-shadow"></div>
+          <div class="warrior-silhouette-body">
+            <img src="${imgUrl}" alt="${name}" class="warrior-painted-portrait" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='block';" />
+            <div class="feet-ink-gradient"></div>
+            <div class="warrior-shield-barrier">
+              <div class="barrier-trigram-ring">☯</div>
+            </div>
             <div class="character-fallback-svg" style="display:none; width:100%; height:100%;">
               ${this.getCharacterSvg(id)}
             </div>
           </div>
-          <div class="ground-shadow"></div>
         </div>
       `;
     }
     return `
-      <div class="character-standee unit-figure">
-        <div class="standee-inner">
+      <div class="character-warrior-figure ${isPlayer ? 'hero-warrior' : 'enemy-warrior'}" data-char-id="${id}">
+        <div class="ground-contact-shadow"></div>
+        <div class="warrior-silhouette-body">
           ${this.getCharacterSvg(id)}
-          <div class="standee-frame-rim"></div>
+          <div class="feet-ink-gradient"></div>
+          <div class="warrior-shield-barrier">
+            <div class="barrier-trigram-ring">☯</div>
+          </div>
         </div>
-        <div class="ground-shadow"></div>
       </div>
     `;
   }
