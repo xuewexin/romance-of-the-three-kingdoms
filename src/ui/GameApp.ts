@@ -992,7 +992,7 @@ export class GameApp {
               return `
               <div class="hand-card card-type-${card.type.toLowerCase()} ${canAfford ? 'affordable' : 'unaffordable'} ${isSelected ? 'selected' : ''} ${hasCombo ? 'combo-active' : ''}"
                    data-index="${idx}"
-                   style="--card-x: ${tf.translateX}px; --card-y: ${isSelected ? -34 : tf.translateY}px; z-index: ${isSelected ? 120 : tf.zIndex};">
+                   style="--card-x: ${tf.translateX}px; --card-y: ${tf.translateY}px; --card-rot: ${tf.rotateDeg}deg; z-index: ${isSelected ? 120 : tf.zIndex};">
                 <div class="card-cost">${card.cost}</div>
                 <div class="card-name">${card.name}</div>
                 <div class="card-type-label">${card.type === 'ATTACK' ? '武技' : card.type === 'SKILL' ? '韬略' : '兵法'}</div>

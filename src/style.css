@@ -1188,7 +1188,7 @@ body {
   cursor: pointer;
   pointer-events: auto;
   transform-origin: bottom center;
-  transform: translate(var(--card-x, 0px), var(--card-y, 0px));
+  transform: translate(var(--card-x, 0px), var(--card-y, 0px)) rotate(var(--card-rot, 0deg));
   transition: transform 0.22s cubic-bezier(0.2, 0.9, 0.3, 1), box-shadow 0.22s, border-color 0.22s;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.85);
 }
@@ -1196,8 +1196,8 @@ body {
 /* Hover: ONLY bob vertically in place, NEVER move to horizontal center */
 .hand-card:hover {
   border-color: var(--ink-gold);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.95), 0 0 16px rgba(212, 175, 55, 0.4);
-  transform: translate(var(--card-x, 0px), -26px) scale(1.05) !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.95), 0 0 16px rgba(212, 175, 55, 0.45);
+  transform: translate(var(--card-x, 0px), calc(var(--card-y, 0px) - 34px)) rotate(var(--card-rot, 0deg)) scale(1.05) !important;
   z-index: 100 !important;
 }
 
@@ -1205,7 +1205,7 @@ body {
 .hand-card.selected {
   border-color: #ffd700 !important;
   box-shadow: 0 0 28px rgba(255, 215, 0, 0.95), 0 12px 30px rgba(0, 0, 0, 0.9) !important;
-  transform: translate(var(--card-x, 0px), -36px) scale(1.08) !important;
+  transform: translate(var(--card-x, 0px), calc(var(--card-y, 0px) - 44px)) rotate(var(--card-rot, 0deg)) scale(1.08) !important;
   z-index: 120 !important;
 }
 
