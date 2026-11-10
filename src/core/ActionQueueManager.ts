@@ -28,6 +28,10 @@ export class ActionQueueManager {
     return this.queue.length;
   }
 
+  public isBusy(): boolean {
+    return this.isProcessing || this.queue.length > 0;
+  }
+
   private async processNext(ctx: any): Promise<void> {
     if (this.isProcessing) return;
     this.isProcessing = true;

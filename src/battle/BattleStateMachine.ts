@@ -41,6 +41,7 @@ export class BattleStateMachine {
   public soundEngine: any;
   public uiNotify: (msg: string) => void;
   public onBattleEnd: (victory: boolean) => void;
+  public onStateChange?: () => void;
 
   constructor(
     player: PlayerUnit,
@@ -55,7 +56,8 @@ export class BattleStateMachine {
     vfxManager: any,
     soundEngine: any,
     uiNotify: (msg: string) => void,
-    onBattleEnd: (victory: boolean) => void
+    onBattleEnd: (victory: boolean) => void,
+    onStateChange?: () => void
   ) {
     this.player = player;
     this.enemies = enemies;
@@ -70,6 +72,7 @@ export class BattleStateMachine {
     this.soundEngine = soundEngine;
     this.uiNotify = uiNotify;
     this.onBattleEnd = onBattleEnd;
+    this.onStateChange = onStateChange;
   }
 
   public isBattleOver(): boolean {
@@ -184,12 +187,20 @@ export class BattleStateMachine {
       player: this.player
     });
 
+    // 核心等待：必须等待抽牌与回合初始行动全数进入手牌完毕，再允许玩家操作
+    while (this.actionQueue.isBusy()) {
+      await new Promise((res) => setTimeout(res, 40));
+    }
+
     this.phase = 'PLAYER_ACTION';
+    if (this.onStateChange) {
+      this.onStateChange();
+    }
   }
 
   public canPlayCard(card: CardData): boolean {
     if (this.phase !== 'PLAYER_ACTION') return false;
-    if (this.actionQueue.getQueueLength() > 0) return false;
+    if (this.actionQueue.isBusy()) return false;
     return this.player.energy >= card.cost;
   }
 
@@ -647,6 +658,7 @@ export class BattleStateMachine {
   public async endPlayerTurn(): Promise<void> {
     if (this.phase !== 'PLAYER_ACTION') return;
     this.phase = 'PLAYER_TURN_END';
+    if (this.onStateChange) this.onStateChange();
 
     // 1. Trigger Zhuge Liang's orb passives
     if (this.orbManager) {
@@ -664,6 +676,7 @@ export class BattleStateMachine {
 
     // 4. Discard hand
     this.deckManager.discardHand();
+    if (this.onStateChange) this.onStateChange();
 
     if (this.checkBattleEnd()) return;
 
@@ -673,6 +686,7 @@ export class BattleStateMachine {
 
   public async runEnemyTurn(): Promise<void> {
     this.phase = 'ENEMY_TURN_START';
+    if (this.onStateChange) this.onStateChange();
 
     // Enemy action execution
     this.phase = 'ENEMY_ACTION';
@@ -683,8 +697,8 @@ export class BattleStateMachine {
     }
 
     // Wait until all enemy actions finish
-    while (this.actionQueue.getQueueLength() > 0) {
-      await new Promise((res) => setTimeout(res, 100));
+    while (this.actionQueue.isBusy()) {
+      await new Promise((res) => setTimeout(res, 60));
     }
 
     if (this.checkBattleEnd()) return;
@@ -704,8 +718,9 @@ export class BattleStateMachine {
         enemy.decideIntent(this.turnCount + 1, this.player, this.rng);
       }
     }
+    if (this.onStateChange) this.onStateChange();
 
-    // Back to player turn
+    // Back to player turn (draws cards and waits for all cards to enter hand)
     await this.startPlayerTurn();
   }
 
@@ -736,6 +751,8 @@ export class BattleStateMachine {
   }
 
   public onQueueEmpty(): void {
-    // Called when the action queue finishes processing
+    if (this.onStateChange) {
+      this.onStateChange();
+    }
   }
 }

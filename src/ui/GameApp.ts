@@ -339,7 +339,8 @@ export class GameApp {
       this.vfxManager,
       this.soundEngine,
       (msg) => this.notify(msg),
-      (victory) => this.handleBattleEnded(victory)
+      (victory) => this.handleBattleEnded(victory),
+      () => this.render()
     );
 
     this.soundEngine.playWarDrum(1.2);
@@ -1578,13 +1579,14 @@ export class GameApp {
     // End turn button
     const endTurnBtn = document.querySelector('.end-turn-btn');
     if (endTurnBtn) {
-      endTurnBtn.addEventListener('click', () => {
-        if (this.currentBattle) {
+      endTurnBtn.addEventListener('click', async () => {
+        if (this.currentBattle && this.currentBattle.phase === 'PLAYER_ACTION') {
           this.soundEngine.playGong();
           this.selectedCard = null;
           this.draggingCard = null;
           this.targetingArrow.hide();
-          this.currentBattle.endPlayerTurn().then(() => this.render());
+          await this.currentBattle.endPlayerTurn();
+          this.render();
         }
       });
     }
