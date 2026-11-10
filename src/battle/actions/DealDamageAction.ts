@@ -39,7 +39,14 @@ export class DealDamageAction extends GameAction {
 
     if (ctx.vfxManager) {
       if (this.source && this.source.id) {
-        ctx.vfxManager.triggerAttackAnimation(this.source.id, this.target ? this.target.id : undefined);
+        const isCrit = this.baseDamage >= 14 || this.tags.includes('HEAVY') || this.tags.includes('FATAL');
+        const isUltimate = this.baseDamage >= 20 || this.tags.includes('DRAGON') || this.tags.includes('ULTIMATE');
+        ctx.vfxManager.triggerAttackAnimation(
+          this.source.id,
+          this.target ? this.target.id : undefined,
+          isCrit,
+          isUltimate
+        );
       }
       if (this.target && this.target.id) {
         ctx.vfxManager.triggerHitAnimation(this.target.id);

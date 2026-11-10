@@ -883,6 +883,81 @@ body {
   transform-origin: bottom center;
 }
 
+/* 2D Multi-Action Pose Animation System (待机、攻击、防御、暴击、大招、战败、战胜) */
+.action-pose-layers {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.action-pose-frame {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 15%;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.12s ease-out, transform 0.18s cubic-bezier(0.2, 0.9, 0.3, 1), filter 0.18s ease;
+  filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.95));
+  mask-image: radial-gradient(ellipse 65% 82% at 50% 46%, black 50%, rgba(0, 0, 0, 0.85) 68%, transparent 95%);
+  -webkit-mask-image: radial-gradient(ellipse 65% 82% at 50% 46%, black 50%, rgba(0, 0, 0, 0.85) 68%, transparent 95%);
+}
+
+.action-pose-frame.active-pose {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* Individual pose visual enhancements */
+.action-pose-frame.pose-idle.active-pose {
+  transform: translateX(-50%) scale(1);
+}
+
+.action-pose-frame.pose-attack.active-pose {
+  transform: translateX(-46%) scale(1.08);
+  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 20px rgba(74, 222, 128, 0.8)) brightness(1.15);
+}
+
+.action-pose-frame.pose-defend.active-pose {
+  transform: translateX(-50%) scale(1.04);
+  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 24px rgba(251, 191, 36, 0.85)) brightness(1.1);
+}
+
+.action-pose-frame.pose-crit.active-pose {
+  transform: translateX(-50%) translateY(-14px) scale(1.14);
+  filter: drop-shadow(0 14px 30px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 35px rgba(239, 68, 68, 0.9)) brightness(1.22);
+}
+
+.action-pose-frame.pose-ultimate.active-pose {
+  transform: translateX(-50%) scale(1.18);
+  filter: drop-shadow(0 14px 35px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 45px rgba(56, 189, 248, 0.95)) brightness(1.28);
+  animation: ultimate-flame-surge 0.7s ease-in-out infinite alternate;
+}
+
+@keyframes ultimate-flame-surge {
+  0% { transform: translateX(-50%) scale(1.16); filter: drop-shadow(0 0 35px rgba(56, 189, 248, 0.8)) brightness(1.2); }
+  100% { transform: translateX(-50%) scale(1.21); filter: drop-shadow(0 0 55px rgba(250, 204, 21, 0.95)) brightness(1.35); }
+}
+
+.action-pose-frame.pose-defeat.active-pose {
+  transform: translateX(-50%) translateY(10px) scale(0.95);
+  filter: grayscale(0.55) brightness(0.7) drop-shadow(0 4px 15px rgba(0, 0, 0, 0.9));
+}
+
+.action-pose-frame.pose-victory.active-pose {
+  transform: translateX(-50%) scale(1.1);
+  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 30px rgba(255, 215, 0, 0.9)) brightness(1.18);
+}
+
 .warrior-painted-portrait {
   width: 100%;
   height: 100%;

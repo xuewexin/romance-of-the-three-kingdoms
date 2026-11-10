@@ -46,11 +46,50 @@ export class VfxManager {
     return document.getElementById(`unit-${unitId}`) || document.getElementById('unit-player');
   }
 
-  // 1. 真实攻击动作：疾步冲刺近身、挥刀/扇劈斩、凌空翻回
-  public triggerAttackAnimation(sourceId: string, targetId?: string): void {
+  // 动作姿态切换：无缝切换真实 2D 动作图片 (idle, attack, defend, crit, ultimate, defeat, victory)
+  public setUnitActionPose(
+    unitId: string,
+    pose: 'idle' | 'attack' | 'defend' | 'crit' | 'ultimate' | 'defeat' | 'victory',
+    durationMs: number = 0
+  ): void {
+    const el = this.getUnitElement(unitId);
+    if (!el) return;
+
+    const frames = el.querySelectorAll<HTMLElement>('.action-pose-frame');
+    if (frames.length === 0) return;
+
+    frames.forEach((f) => {
+      if (f.dataset.pose === pose) {
+        f.classList.add('active-pose');
+      } else {
+        f.classList.remove('active-pose');
+      }
+    });
+
+    if (durationMs > 0 && pose !== 'idle') {
+      setTimeout(() => {
+        // 若已处于战败或战胜终结姿态，不切回待机
+        if (!el.classList.contains('anim-defeat-kneel') && !el.classList.contains('anim-victory-pose')) {
+          this.setUnitActionPose(unitId, 'idle', 0);
+        }
+      }, durationMs);
+    }
+  }
+
+  // 1. 真实攻击动作：动作图切换(斩击/重斩/大招)、疾步冲刺近身、挥刀/扇劈斩、凌空翻回
+  public triggerAttackAnimation(
+    sourceId: string,
+    targetId?: string,
+    isCrit: boolean = false,
+    isUltimate: boolean = false
+  ): void {
     const sourceEl = this.getUnitElement(sourceId);
     if (!sourceEl) return;
     const isPlayer = sourceId === 'player' || sourceId === 'GUAN_YU' || sourceId === 'ZHUGE_LIANG' || sourceId === 'GAN_NING';
+
+    // 切换对应的动作图片帧
+    const pose = isUltimate ? 'ultimate' : isCrit ? 'crit' : 'attack';
+    this.setUnitActionPose(sourceId, pose, 580);
 
     // 计算攻击冲刺距离 (目标在视野中的横向差值)
     let dashDistance = isPlayer ? 380 : -380;
@@ -76,8 +115,9 @@ export class VfxManager {
     }, 560);
   }
 
-  // 2. 真实受击动作：重创震退、血墨飞溅、通体赤红闪烁
+  // 2. 真实受击动作：切换受创败阵姿态、重创震退、血墨飞溅、通体赤红闪烁
   public triggerHitAnimation(targetId: string): void {
+    this.setUnitActionPose(targetId, 'defeat', 420);
     const el = this.getUnitElement(targetId);
     if (!el) return;
     el.classList.remove('anim-hit-recoil');
@@ -105,8 +145,9 @@ export class VfxManager {
     }, 450);
   }
 
-  // 3. 真实防御姿态：横刀架御、玄武金光八卦护盾绽放
+  // 3. 真实防御姿态：切换横刀架御/奇门八卦动作图片、玄武金光八卦护盾绽放
   public triggerDefendAnimation(targetId: string): void {
+    this.setUnitActionPose(targetId, 'defend', 500);
     const el = this.getUnitElement(targetId);
     if (!el) return;
     el.classList.remove('anim-shield-brace');
@@ -117,8 +158,9 @@ export class VfxManager {
     }, 480);
   }
 
-  // 4. 真实战胜姿态：高举神兵、金芒万丈、三军振臂
+  // 4. 真实战胜姿态：切换高举神兵/抚须凯旋动作图片、金芒万丈、三军振臂
   public triggerVictoryAnimation(playerId: string = 'player'): void {
+    this.setUnitActionPose(playerId, 'victory', 0);
     const el = this.getUnitElement(playerId);
     if (!el) return;
     el.classList.add('anim-victory-pose');
@@ -143,8 +185,9 @@ export class VfxManager {
     }
   }
 
-  // 5. 真实战败动作：力竭败阵、横刀半跪、消融于水墨迷障
+  // 5. 真实战败动作：切换力竭败阵/横刀半跪动作图片、消融于水墨迷障
   public triggerDefeatAnimation(playerId: string = 'player'): void {
+    this.setUnitActionPose(playerId, 'defeat', 0);
     const el = this.getUnitElement(playerId);
     if (!el) return;
     el.classList.add('anim-defeat-kneel');
